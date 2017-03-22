@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.Map;
-// Temporary change
+// Added Top Stock View
 public class TopStockView extends JPanel {
   private boolean DEBUG = false;
 
