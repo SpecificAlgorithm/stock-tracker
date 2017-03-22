@@ -43,9 +43,15 @@ public class SearchStockView implements IView {
 		GridBagConstraints c = new GridBagConstraints();
 		field = new JTextField();
 		GhostText ghostText = new GhostText(field, "Enter stock name or Ticker here...");
+		
 		JButton button = new JButton();
 		button.setText("Search!");
 		setActionListenerForButton(button);
+		
+		JButton button2 = new JButton();
+		button2.setText("Top Stock");
+		setActionListenerForButton2(button2);
+		
 		this.tModel = new DefaultTableModel(ssCont.getData(), this.ssCont.getColumns());
 		table = new JTable(this.tModel);
 		scroll = new JScrollPane(table);
@@ -63,6 +69,13 @@ public class SearchStockView implements IView {
 		c.weightx = 1;
 		c.weighty = 1;
 		panel.add(button, c);
+		
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.gridx = 1;
+		c.gridy = 1;
+		c.weightx = 2;
+		c.weighty = 2;
+		panel.add(button2, c);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
@@ -89,6 +102,21 @@ public class SearchStockView implements IView {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
+				
+			}
+		});
+	}
+	
+	private void setActionListenerForButton2(JButton button2)
+	{
+		button2.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+					TopStockView view = new TopStockView();
+					frame.setVisible(false);
+					view.createAndShowGUI();
+				
 				
 			}
 		});
