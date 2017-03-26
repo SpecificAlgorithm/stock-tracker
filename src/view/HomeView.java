@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import controller.HomeController;
 import controller.IController;
 import controller.SearchStockController;
+import controller.UpdateBalanceController;
 
 public class HomeView   implements IView { 
 	 
@@ -96,12 +97,17 @@ public class HomeView   implements IView {
 			topStockButton.setText("Top 30 stock");
 			addActionListenerTopStock(topStockButton);
 			
+			JButton updateBalanceButton = new JButton("update balance");
+			addActionListenerUpdateBalance(updateBalanceButton);
+			
+			
 			
 			
 			
 			panel.setLayout(new FlowLayout());
 			panel.add(searchStockButton);
 			panel.add(topStockButton);
+			panel.add(updateBalanceButton);
 			
 			frame.add(panel);
 			frame.pack();
@@ -127,6 +133,19 @@ public class HomeView   implements IView {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					hCont.switchToTopStockContext();
+					
+				}
+			});
+		}
+		
+		private void addActionListenerUpdateBalance(JButton updateBalanceButton)
+		{
+			updateBalanceButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					UpdateBalanceController upCont = new UpdateBalanceController();
+					upCont.switchContext();
 					
 				}
 			});

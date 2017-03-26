@@ -8,6 +8,7 @@ public class HomeController  extends IController {
 		private CommonUtil comUtil = null;
 		private SearchStockController ssCont;
 		private TopStockController tscCont;
+		private UpdateBalanceController ubCont;
 		private String userName;
 		
 		public void switchContext(User user)
@@ -34,6 +35,10 @@ public class HomeController  extends IController {
 			tscCont.switchContext();
 		}
 
+		public void switchToUpdateBalanceContext()
+		{
+			ubCont.switchContext();
+		}
 
 
 
