@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
@@ -86,11 +87,21 @@ public class HomeView   implements IView {
 			this.hCont = hCont;
 			frame.getContentPane().removeAll();
 			JPanel panel = new JPanel();
+			
 			JButton searchStockButton = new JButton();
 			searchStockButton.setText("Search Stock");
 			addActionListenerSearch(searchStockButton);
+			
+			JButton topStockButton = new JButton();
+			topStockButton.setText("Top 30 stock");
+			addActionListenerTopStock(topStockButton);
+			
+			
+			
+			
 			panel.setLayout(new FlowLayout());
 			panel.add(searchStockButton);
+			panel.add(topStockButton);
 			
 			frame.add(panel);
 			frame.pack();
@@ -107,6 +118,18 @@ public class HomeView   implements IView {
 					hCont.switchToSearchContext();
 				}
 		    });
+		}
+		
+		private void addActionListenerTopStock(JButton topStockButton)
+		{
+			topStockButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					hCont.switchToTopStockContext();
+					
+				}
+			});
 		}
 	 
 } 

@@ -32,18 +32,6 @@ public class PorfolioController extends IController {
 
 	PorfolioView View = new PorfolioView();
 
-	public void sellStock(List<Stock> stocks) {
-		// Listeners and handlers for selling Stocks functionality
-
-
-		// When Selling Stocks
-		
-	} // bracket ends the Selling function
-
-	public void buyStock(List<Stock> stocks) {
-		// Buying a Stock
-
-
-	}
+	
 
 }

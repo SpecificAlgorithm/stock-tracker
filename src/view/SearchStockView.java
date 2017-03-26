@@ -49,7 +49,7 @@ public class SearchStockView implements IView {
 		setActionListenerForButton(button);
 		
 		JButton button2 = new JButton();
-		button2.setText("Top Stock");
+		button2.setText("go back");
 		setActionListenerForButton2(button2);
 		
 		this.tModel = new DefaultTableModel(ssCont.getData(), this.ssCont.getColumns());
@@ -113,9 +113,7 @@ public class SearchStockView implements IView {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-					TopStockView view = new TopStockView();
-					frame.setVisible(false);
-					view.createAndShowGUI();
+					ssCont.goBackToHome();
 				
 				
 			}

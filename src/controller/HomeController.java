@@ -7,11 +7,13 @@ public class HomeController  extends IController {
 		
 		private CommonUtil comUtil = null;
 		private SearchStockController ssCont;
+		private TopStockController tscCont;
 		private String userName;
 		
 		public void switchContext(User user)
 		{
 			ssCont = new SearchStockController();
+			tscCont = new TopStockController();
 			System.out.println(user.getUsername());
 			setUser(user);
 			HomeView view = new HomeView();
@@ -27,4 +29,13 @@ public class HomeController  extends IController {
 			ssCont.switchContext();
 		}
 	 
+		public void switchToTopStockContext()
+		{
+			tscCont.switchContext();
+		}
+
+
+
+
+
 } 

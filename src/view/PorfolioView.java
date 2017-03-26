@@ -415,7 +415,6 @@ public class PorfolioView implements IView {
 		btnSell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Connection connection;
-				Expression<T> expobj;
 				if (rdbtnMultiple.isSelected()) {
 					String Num_Pat = "^[0-9]{1,2}$"; // Reg exp pattern
 					String Input = NumOFStocks.getText(); // getting User input
