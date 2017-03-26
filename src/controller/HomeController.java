@@ -9,12 +9,15 @@ public class HomeController  extends IController {
 		private SearchStockController ssCont;
 		private TopStockController tscCont;
 		private UpdateBalanceController ubCont;
+		private PortfolioController pCont;
 		private String userName;
 		
 		public void switchContext(User user)
 		{
 			ssCont = new SearchStockController();
 			tscCont = new TopStockController();
+			ubCont = new UpdateBalanceController();
+			pCont = new PortfolioController();
 			System.out.println(user.getUsername());
 			setUser(user);
 			HomeView view = new HomeView();
@@ -40,6 +43,10 @@ public class HomeController  extends IController {
 			ubCont.switchContext();
 		}
 
+		public void switchToPortfolioContext()
+		{
+			pCont.switchContext();
+		}
 
 
 

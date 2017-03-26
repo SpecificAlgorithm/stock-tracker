@@ -1,12 +1,18 @@
 package view;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executor;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import controller.IController;
-import controller.PorfolioController;
+import controller.PortfolioController;
 import model.Stock;
+import utility.CommonUtil;
+
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -22,9 +28,24 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLClientInfoException;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Savepoint;
+import java.sql.Statement;
+import java.sql.Struct;
 import java.awt.event.ActionEvent;
 import java.util.regex.*;
 
@@ -32,39 +53,39 @@ public class PorfolioView implements IView {
    
 	
 	// sellStock function Variables
-	private JFrame frame = new JFrame();
+//	private JFrame frame = new JFrame();
 	private JPanel contentPane = new JPanel();
 	private JTextField NumOFStocks = new JTextField();
-	private JButton btnSell;
-	private JButton btnCancel;
-	private JTextField Company;
-	private JTextField Price = null;
-	JButton btnSell11;
-	JButton btnCancel11;
-	JLabel lblIfYouAre;
+	private JButton btnSell = new JButton();
+	private JButton btnCancel = new JButton();
+	private JTextField Company = new JTextField();
+	private JTextField Price = new JTextField();
+	JButton btnSell11 = new JButton();
+	JButton btnCancel11 = new JButton();
+	JLabel lblIfYouAre = new JLabel();
 //	JRadioButton rdbtnMultiple1;
-	JLabel lblNumOfStocks;
+	JLabel lblNumOfStocks = new JLabel();
 	//
 	//
 	
     //buyStock function Variables
-	private JPanel contentPane1;
-	private JTextField NumOFStocks1;
-	private JTextField Company1;
-	private JTextField Price1;
-	JRadioButton rdbtnMultiple;
-	JButton btnSell1;
-	JButton btnCancel1;
-	JLabel lblIfYouAre1;
-	JRadioButton rdbtnMultiple1;
-	JLabel lblNumOfStocks1;
+	private JPanel contentPane1 = new JPanel();
+	private JTextField NumOFStocks1 = new JTextField();
+	private JTextField Company1 = new JTextField();
+	private JTextField Price1 = new JTextField();
+	JRadioButton rdbtnMultiple = new JRadioButton();
+	JButton btnSell1 = new JButton();
+	JButton btnCancel1 = new JButton();
+	JLabel lblIfYouAre1 = new JLabel();
+	JRadioButton rdbtnMultiple1 = new JRadioButton();
+	JLabel lblNumOfStocks1 = new JLabel();
 	//
 	//PorfolioController controller;
 	
 //	public PorfolioView() {
 //		this.controller = new PorfolioController();
 //	}
-	    
+	
 	public void initalize() {
 		rdbtnMultiple1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -81,10 +102,27 @@ public class PorfolioView implements IView {
 					NumOFStocks.setVisible(false);
 
 				}
-				controller.buyStock(stocks);
 			}
 		});
 	}
+	
+	public static Connection dbconnection() {
+		try {
+
+			Class.forName("org.sqlite.JDBC");
+			
+			Connection Call = DriverManager
+			        .getConnection("jdbc:sqlite:" + CommonUtil.getAbsolutePathOfFile("db" + File.separator + "StockTracker.sqlite"));
+			return Call;
+
+		} catch (Exception e) {
+
+			JOptionPane.showMessageDialog(null, "Disconnected");
+			return null;
+		}
+	}
+	    
+
 	
 	private TableView portfolio;
 
@@ -117,11 +155,9 @@ public class PorfolioView implements IView {
 		// TODO Auto-generated method stub
 
 	}
+	
 
-	public void sellStock(List<Stock> stocks) {
-		
-		
-		
+	public void sellStock() {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(100, 100, 849, 566);
 		
@@ -174,13 +210,10 @@ public class PorfolioView implements IView {
 		Price.setColumns(10);
 		Price.setBounds(380, 303, 323, 53);
 		contentPane.add(Price);
-
 	}
 
-	public void buyStock(List<Stock> stocks) {
-
-		
-
+	public void buyStock() 
+	{
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setBounds(100, 100, 844, 545);
 		contentPane = new JPanel();
@@ -241,14 +274,14 @@ public class PorfolioView implements IView {
 		btnSell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				Connection connection;
+				Connection connection = dbconnection();
 				if (rdbtnMultiple.isSelected()) {
 					String Num_Pat = "^[0-9]{1,2}$"; // Pattern set for integers
 														// FIXME : fix it and
 														// make more than 1
 					String Input = NumOFStocks.getText();
-					
-					if (expobj.regexChecker(Num_Pat, Input)) {
+					utility.CommonUtil temp = new utility.CommonUtil();
+					if (temp.regexChecker(Num_Pat, Input)) {
 						int multiple = Integer.parseInt(Input); // convert to
 																// integer INPUT
 						// stop
@@ -414,13 +447,13 @@ public class PorfolioView implements IView {
 		// Move to Handlers
 		btnSell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Connection connection;
+				Connection connection = dbconnection();
 				if (rdbtnMultiple.isSelected()) {
 					String Num_Pat = "^[0-9]{1,2}$"; // Reg exp pattern
 					String Input = NumOFStocks.getText(); // getting User input
 					int multiple = Integer.parseInt(Input); // change the input
-															// to int
-					if (expobj.regexChecker(Num_Pat, Input)) { // check if the
+					utility.CommonUtil temp = new utility.CommonUtil();							// to int
+					if (temp.regexChecker(Num_Pat, Input)) { // check if the
 																// pattern is
 																// right
 						JOptionPane.showMessageDialog(null, "Match"); // send a

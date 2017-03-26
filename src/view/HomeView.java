@@ -97,8 +97,14 @@ public class HomeView   implements IView {
 			topStockButton.setText("Top 30 stock");
 			addActionListenerTopStock(topStockButton);
 			
-			JButton updateBalanceButton = new JButton("update balance");
+			JButton updateBalanceButton = new JButton();
+			updateBalanceButton.setText("Update balance");
 			addActionListenerUpdateBalance(updateBalanceButton);
+			
+			JButton portfolioButton = new JButton();
+			portfolioButton.setText("Portfolio");
+			addActionListenerPortfolio(portfolioButton);
+			
 			
 			
 			
@@ -108,6 +114,7 @@ public class HomeView   implements IView {
 			panel.add(searchStockButton);
 			panel.add(topStockButton);
 			panel.add(updateBalanceButton);
+			panel.add(portfolioButton);
 			
 			frame.add(panel);
 			frame.pack();
@@ -144,8 +151,18 @@ public class HomeView   implements IView {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					UpdateBalanceController upCont = new UpdateBalanceController();
-					upCont.switchContext();
+					hCont.switchToUpdateBalanceContext();					
+				}
+			});
+		}
+		
+		private void addActionListenerPortfolio(JButton portfolioButton)
+		{
+			portfolioButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					hCont.switchToPortfolioContext();
 					
 				}
 			});

@@ -28,9 +28,13 @@ import java.sql.ResultSet;
 import java.awt.event.ActionEvent;
 import java.util.regex.*;
 
-public class PorfolioController extends IController {
+public class PortfolioController extends IController {
 
 	PorfolioView View = new PorfolioView();
+
+	public void switchContext() {
+		View.initalize();	
+	}
 
 	
 

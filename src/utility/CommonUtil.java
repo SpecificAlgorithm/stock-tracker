@@ -1,6 +1,8 @@
 package utility; 
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import controller.*;
 public class CommonUtil    { 
@@ -31,4 +33,12 @@ public class CommonUtil    {
 			String path = dbFile.getAbsolutePath();
 			return path;
 		}
+		
+		public static boolean regexChecker(String theRegex, String str2Check){
+			   
+			Pattern checkRegex = Pattern.compile(theRegex);
+	        Matcher regexMatcher = checkRegex.matcher( str2Check );
+
+	        return regexMatcher.matches();
+	     }
 } 
