@@ -12,13 +12,21 @@ import controller.IController;
 import controller.PortfolioController;
 import model.Stock;
 import utility.CommonUtil;
+import utility.YahooClient;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import com.sun.javafx.fxml.expression.Expression;
 
@@ -48,6 +56,30 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.awt.event.ActionEvent;
 import java.util.regex.*;
+
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import utility.YahooClient;
+import yahoofinance.YahooFinance;
 
 public class PorfolioView implements IView {
    
@@ -79,14 +111,121 @@ public class PorfolioView implements IView {
 	JLabel lblIfYouAre1 = new JLabel();
 	JRadioButton rdbtnMultiple1 = new JRadioButton();
 	JLabel lblNumOfStocks1 = new JLabel();
+	
+	
+	
+	
+	
+	private static final long serialVersionUID = 1L;  
+    protected static final boolean DEBUG = false;
+    private JTable table;
+    YahooClient client = new YahooClient();
+    TableModel model;
+    JPanel panel = new JPanel(new BorderLayout());
+    JButton button = new JButton("Sell");
+    JTextField searchTextField = new JTextField(15);
+    JButton searchBtn = new JButton("Search");
+    JPanel flowLayoutPanel = new JPanel(new FlowLayout());
+    TableRowSorter<TableModel> sorter;
+    int i = 100000;
+    int cost = 5000;
 	//
 	//PorfolioController controller;
 	
-//	public PorfolioView() {
-//		this.controller = new PorfolioController();
-//	}
+	public PorfolioView() {
+    	JTextArea area1 = new JTextArea(1,1);
+        area1.setText("Funds:");
+        area1.setEditable(false); 
+    	JTextArea area = new JTextArea(1,1);
+        area.setText(String.valueOf(i));
+        area.setEditable(false); 
+    	yahoofinance.Stock stock = null;
+		try {
+			stock = YahooFinance.get("GOOG");
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		yahoofinance.Stock stock1 = null;
+		try {
+			stock1 = YahooFinance.get("ABB");
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+        String[] columnNames = { "Stock", "Amount ", "Sell"};
+        Object[][] data =  {{stock.getName(),(cost+1000)},{stock1.getName(),(cost + 2000)}};
+        model = new DefaultTableModel(data, columnNames) {
+            @Override
+            public Class getColumnClass(int column) {
+
+                switch(column) {
+                case 0: 
+                case 1: return String.class;
+                case 2: return Boolean.class;
+                default: return Object.class;
+
+                }
+            }
+        };
+
+        table = new JTable(model) {
+            public boolean isCellEditable(int row, int col) {
+            	 if (col < 2) {
+     	            return false;
+     	        } else {
+     	            return true;
+     	        }
+            }
+        };
+
+        sorter = new TableRowSorter<TableModel>(model);
+        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+        table.setRowSorter(sorter);
+        table.setGridColor(Color.black);
+        JScrollPane scrollPane = new JScrollPane(table);
+        
+        button.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+            	String label = "Message";
+                for(int row = 0; row < table.getRowCount(); ++row) {
+                    if((Boolean) table.getValueAt(row, 2) == true) {
+                    	int j = (Integer) table.getValueAt(row, 1);
+                    	i = i + j;
+                    	area.setText(String.valueOf(i));
+                        ((DefaultTableModel) model).removeRow(table.convertRowIndexToModel(row));
+                        JOptionPane.showMessageDialog(button, label + ": Stock Sold!");
+                        row--;
+                    }
+                }
+            }
+        });
+
+        searchBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String text = searchTextField.getText();
+                if (text.length() == 0) {
+                    sorter.setRowFilter(null);
+                } else {
+                    sorter.setRowFilter(RowFilter.regexFilter(text));
+                }
+            }
+        });
+        flowLayoutPanel.add(area1);
+        flowLayoutPanel.add(area);
+        flowLayoutPanel.add(searchTextField);
+        flowLayoutPanel.add(searchBtn);
+        panel.add(flowLayoutPanel,BorderLayout.NORTH);
+        panel.add(scrollPane , BorderLayout.CENTER);
+        panel.add(button, BorderLayout.PAGE_END);
+        frame.getContentPane().removeAll();
+        frame.getContentPane().add(panel);
+        frame.pack();
+        frame.setVisible(true);
+	}
 	
 	public void initalize() {
+		
 		rdbtnMultiple1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 

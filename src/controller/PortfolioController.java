@@ -30,9 +30,10 @@ import java.util.regex.*;
 
 public class PortfolioController extends IController {
 
-	PorfolioView View = new PorfolioView();
+	PorfolioView View;
 
 	public void switchContext() {
+		View = new PorfolioView();
 		View.initalize();	
 	}
 
