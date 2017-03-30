@@ -5,7 +5,7 @@ import view.SearchStockView;
 public class SearchStockController extends IController{
 	
 	String[] columns = {"Name", "Ticker", "Current Selling $",
-			"Net Gain Today", "Additional Information"};
+			"Net Gain Today", "Additional Information", "Buy"};
 	
 	public void switchContext()
 	{
@@ -20,7 +20,7 @@ public class SearchStockController extends IController{
 	
 	public String[][] getData()
 	{
-		String[][] data = {{"a", "a", "a", "a", "a"}};
+		String[][] data = {{"", "", "", "", "", ""}};
 		return data;
 	}
 	

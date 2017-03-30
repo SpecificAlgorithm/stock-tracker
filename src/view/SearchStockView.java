@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -52,8 +53,17 @@ public class SearchStockView implements IView {
 		button2.setText("go back");
 		setActionListenerForButton2(button2);
 		
-		this.tModel = new DefaultTableModel(ssCont.getData(), this.ssCont.getColumns());
-		table = new JTable(this.tModel);
+//		this.tModel = new DefaultTableModel(ssCont.getData(), this.ssCont.getColumns());
+		
+	    this.tModel = new DefaultTableModel();
+	    this.tModel.setDataVector(ssCont.getData(), this.ssCont.getColumns());
+
+	    table = new JTable(this.tModel);
+	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
+	    table.getColumn("Buy").setCellEditor(
+	        new ButtonEditor(new JCheckBox()));
+	    JScrollPane scroll = new JScrollPane(table);
+//		table = new JTable(this.tModel);
 		scroll = new JScrollPane(table);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -124,8 +134,12 @@ public class SearchStockView implements IView {
 	{
 		String[][] data = client.searchStock(field.getText());
 		this.tModel.setDataVector(data, this.ssCont.getColumns());
-		this.tModel.fireTableDataChanged();
 		
+
+	    this.tModel.fireTableDataChanged();
+	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
+	    table.getColumn("Buy").setCellEditor(
+	        new ButtonEditor(new JCheckBox()));
 	}
 	
 	

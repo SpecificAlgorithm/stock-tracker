@@ -14,4 +14,10 @@ public class TopStockController extends IController
 		HomeController hc = new HomeController();
 		hc.switchContext(user);
 	}
+	
+	public String[] getTopStocks()
+	{
+		String[] ret = {"AAPL", "NVDA", "INTC", "XOM", "NKE"};
+		return ret;
+	}
 }
