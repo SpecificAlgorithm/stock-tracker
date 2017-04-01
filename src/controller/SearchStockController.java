@@ -1,5 +1,8 @@
 package controller;
 
+import java.io.IOException;
+
+import utility.YahooClient;
 import view.SearchStockView;
 
 public class SearchStockController extends IController{
@@ -18,16 +21,28 @@ public class SearchStockController extends IController{
 		return columns;
 	}
 	
-	public String[][] getData()
+	public String[][] getData(String searchStr)
 	{
 		String[][] data = {{"", "", "", "", "", ""}};
+		if(searchStr != null)
+		{
+			YahooClient client = new YahooClient();
+			try {
+				data = client.searchStock(searchStr);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return data;
 	}
+	
 	
 	public void goBackToHome()
 	{
 		HomeController hc = new HomeController();
 		hc.switchContext(user);
 	}
+
 
 }

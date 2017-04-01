@@ -214,6 +214,11 @@ public class LoginView   implements IView {
 						 LogInPanel.setVisible(true);
 						 Registeration.setVisible(false);
 					}
+					else
+					{
+						JOptionPane.showMessageDialog(frame,
+							    "User already exist in database");
+					}
 				      
 			          	}
 					

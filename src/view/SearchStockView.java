@@ -1,5 +1,6 @@
 package view;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -17,6 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
 import controller.IController;
@@ -32,6 +35,11 @@ public class SearchStockView implements IView {
 	JPanel panel;
 	JScrollPane scroll;
 	DefaultTableModel tModel;
+	
+	public String getStockName()
+	{
+		return (String) table.getModel().getValueAt(0, 0);
+	}
 
 	
 	public void switchContext(SearchStockController ssCont)
@@ -56,16 +64,22 @@ public class SearchStockView implements IView {
 //		this.tModel = new DefaultTableModel(ssCont.getData(), this.ssCont.getColumns());
 		
 	    this.tModel = new DefaultTableModel();
-	    this.tModel.setDataVector(ssCont.getData(), this.ssCont.getColumns());
+	    this.tModel.setDataVector(ssCont.getData(null), this.ssCont.getColumns());
 
 	    table = new JTable(this.tModel);
+	    TableColumnModel colModel=table.getColumnModel();
+	    TableColumn col=colModel.getColumn(5);
+	    col.setPreferredWidth(30);
+	    ButtonEditor be = new ButtonEditor(new JCheckBox());
+	    be.view = this;
 	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
-	    table.getColumn("Buy").setCellEditor(
-	        new ButtonEditor(new JCheckBox()));
+	    table.getColumn("Buy").setCellEditor(be);
+
 	    JScrollPane scroll = new JScrollPane(table);
 //		table = new JTable(this.tModel);
-		scroll = new JScrollPane(table);
-		
+//		scroll = new JScrollPane(table);
+//		scroll.setSize(600, 600);
+	    table.setPreferredScrollableViewportSize(new Dimension(1000, 50));
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
@@ -89,14 +103,15 @@ public class SearchStockView implements IView {
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
-		c.gridy = 2;
-		c.weightx = 2;
-		c.weighty = 2;
+		c.gridy = 1;
+		c.weightx = 40;
+		c.weighty = 40;
 		panel.add(scroll, c);
 		
 		frame.add(panel);
 		frame.pack();
 		frame.setVisible(true);
+		
 	}
 	
 	
@@ -137,9 +152,10 @@ public class SearchStockView implements IView {
 		
 
 	    this.tModel.fireTableDataChanged();
+	    ButtonEditor be = new ButtonEditor(new JCheckBox());
+	    be.view = this;
 	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
-	    table.getColumn("Buy").setCellEditor(
-	        new ButtonEditor(new JCheckBox()));
+	    table.getColumn("Buy").setCellEditor(be);
 	}
 	
 	
@@ -162,7 +178,7 @@ public class SearchStockView implements IView {
 	
 	class MyTableModel extends AbstractTableModel {
 	    private String[] columnNames = ssCont.getColumns();//same as before...
-	    private Object[][] data = ssCont.getData();//same as before...
+	    private Object[][] data = ssCont.getData(null);//same as before...
 
 	    public int getColumnCount() {
 	        return columnNames.length;

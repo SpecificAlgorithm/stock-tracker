@@ -1,6 +1,8 @@
 package utility;
 
 import java.io.File;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -39,13 +41,30 @@ public class DatabaseUtil {
 			return null;
 		}
 	}
+	
+	private static byte[] getPasswordHash(String passwordClear)
+	{
+		MessageDigest m = null;
+		try {
+			m = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		m.reset();
+		m.update(passwordClear.getBytes());
+		byte[] digest = m.digest();
+		System.out.println(digest.toString());
+		return digest;
+		
+	}
 
 	public static boolean canLogOn(ActionEvent event) throws SQLException {
 		Connection connection = dbconnection();
 		String query = "SELECT * FROM Users WHERE username = ? AND password = ?";
 		PreparedStatement pst = connection.prepareStatement(query);
 		pst.setString(1, event.username);
-		pst.setString(2, event.password); // Sq lite
+		pst.setBytes(2, getPasswordHash(event.password)); // Sq lite
 
 		ResultSet rs = pst.executeQuery();
 		int count = 0;
@@ -65,16 +84,31 @@ public class DatabaseUtil {
 	public static boolean registerInDatabase(ActionEvent event) {
 		try {
 			Connection connection = dbconnection();
+			String initialCheck = "Select * FROM Users u WHERE u.username == ?";
+			PreparedStatement CheckPst = connection.prepareStatement(initialCheck);
+			CheckPst.setString(1, event.username);
+			ResultSet rs = CheckPst.executeQuery();
+			CheckPst.close();
+			if(rs.next())
+			{
+				connection.close();
+				return false;
+			}
+			
+					
 			String query = "INSERT INTO Users (username,password) VALUES (?,?)";
 			PreparedStatement pst = connection.prepareStatement(query);
 			pst.setString(1, event.username);
-			pst.setString(2, event.password);
+			pst.setBytes(2, getPasswordHash(event.password));
+//			pst.setDouble(3, 0.0);
 
 			pst.execute();
 			pst.close();
+			connection.close();
 			return true;
 
 		} catch (Exception e1) {
+			System.out.println("this error is triggering");
 			return false;
 		}
 	}

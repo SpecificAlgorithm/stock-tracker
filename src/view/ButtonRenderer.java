@@ -11,7 +11,9 @@ import javax.swing.JTable;
 import javax.swing.UIManager;
 import javax.swing.table.TableCellRenderer;
 
-class ButtonRenderer extends JButton implements TableCellRenderer {
+class ButtonRenderer extends JButton implements TableCellRenderer 
+{
+
 
 	  public ButtonRenderer() {
 	    setOpaque(true);
@@ -36,6 +38,7 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
 	 */
 
 	class ButtonEditor extends DefaultCellEditor {
+		public SearchStockView view;
 	  protected JButton button;
 
 	  private String label;
@@ -51,6 +54,8 @@ class ButtonRenderer extends JButton implements TableCellRenderer {
 		@Override
 		public void actionPerformed(java.awt.event.ActionEvent arg0) {
 			// TODO Auto-generated method stub
+			BuyStockView buyView = new BuyStockView();
+			buyView.buyStock(view.getStockName());
 			fireEditingStopped();
 		}
 	    });

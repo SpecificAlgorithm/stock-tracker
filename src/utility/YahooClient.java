@@ -21,9 +21,16 @@ public class YahooClient {
 		double netGain = getNetGainFromYesterday(stock);
 		
 		//TODO: need to add meaningful website.
-		String[][] data = {{stock.getName(), stock.getSymbol(), stock.getQuote(true).getPrice().toString(), String.valueOf(netGain), "www.website.com"}};
+		String[][] data = {{stock.getName(), stock.getSymbol(), stock.getQuote(true).getPrice().toString(), String.valueOf(netGain), getURL(searchStr)}};
 		
 		return data;
+	}
+	
+	public String getURL(String stockName)
+	{
+		
+		String startingPoint = "http://finance.yahoo.com/quote/";
+		return startingPoint + stockName;
 	}
 	
 	
