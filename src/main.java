@@ -15,7 +15,10 @@
 	import javax.swing.JPasswordField;
 	import javax.swing.JRadioButton;
 	import javax.swing.JTextPane;
-	import javax.swing.ImageIcon;
+
+import controller.LoginController;
+
+import javax.swing.ImageIcon;
 	import javax.swing.JButton;
 	import javax.swing.JTextArea;
 	import javax.swing.JTextField;
@@ -30,9 +33,8 @@ public class main {
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
 					try {
-						LoginView window = new LoginView();
-						window.init();
-						window.frame.setVisible(true);
+						LoginController loginCont = new LoginController();
+						loginCont.init();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

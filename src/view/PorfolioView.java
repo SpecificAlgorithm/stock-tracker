@@ -254,7 +254,8 @@ public class PorfolioView implements IView {
 			        .getConnection("jdbc:sqlite:" + CommonUtil.getAbsolutePathOfFile("db" + File.separator + "StockTracker.sqlite"));
 			return Call;
 
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 
 			JOptionPane.showMessageDialog(null, "Disconnected");
 			return null;

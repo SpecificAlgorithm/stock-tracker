@@ -17,6 +17,10 @@ public class YahooClient {
 	public String[][] searchStock(String searchStr) throws IOException
 	{
 		yahoofinance.Stock stock = getCurrentStockInfo(searchStr);
+		if(stock.getName() == null)
+		{
+			return null;
+		}
 
 		double netGain = getNetGainFromYesterday(stock);
 		
@@ -38,7 +42,7 @@ public class YahooClient {
 	
 	private double getNetGainFromYesterday(yahoofinance.Stock stock) throws IOException
 	{
-		HistoricalQuote quote = getPreviousQuote(stock, 1);
+//		HistoricalQuote quote = getPreviousQuote(stock, 1);
 		HistoricalQuote recent = getPreviousQuote(stock, 1);
 		double yesterdaysPrice = recent.getClose().doubleValue();
 		double todaysPrice = stock.getQuote(true).getPrice().doubleValue();
@@ -49,12 +53,13 @@ public class YahooClient {
 	{
 		java.util.Calendar from = java.util.Calendar.getInstance();
 		java.util.Calendar to = java.util.Calendar.getInstance();
-		from.add(java.util.Calendar.DAY_OF_MONTH, -20); //this gets the last 20 days but we only need the last recorded day
+		from.add(java.util.Calendar.DAY_OF_YEAR, -20); //this gets the last 20 days but we only need the last recorded day
 														//I ran into the issue of the stock market not running on weekends:).
 														//they might close on holidays too, so the 20 days *should* cover it.
 		
 		List<HistoricalQuote> hist =  stock.getHistory(from, to, Interval.DAILY);
-		HistoricalQuote recent = hist.get(prevDays - 1);
+		System.out.println(hist.get(0).getDate());
+		HistoricalQuote recent = hist.get(1);//prevDays - 1);
 		return recent;
 	}
 	private yahoofinance.Stock getCurrentStockInfo(String stockName)

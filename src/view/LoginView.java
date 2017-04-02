@@ -50,7 +50,7 @@ public class LoginView   implements IView {
 			frame.setBounds(100, 100, 1046, 696);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.getContentPane().setLayout(new CardLayout(0, 0));
-			
+			frame.setVisible(true);
 			JPanel LogInPanel = new JPanel();
 			frame.getContentPane().add(LogInPanel, "name_177766443117171");
 			LogInPanel.setLayout(null);
@@ -89,6 +89,7 @@ public class LoginView   implements IView {
 			rdbtnRemeberMe.setForeground(new Color(255, 0, 0));
 			rdbtnRemeberMe.setBounds(35, 371, 277, 50);
 			LogInPanel.add(rdbtnRemeberMe);
+			
 			
 			passwordField = new JPasswordField();
 			passwordField.setFont(new Font("Tahoma", Font.PLAIN, 37));
@@ -216,8 +217,7 @@ public class LoginView   implements IView {
 					}
 					else
 					{
-						JOptionPane.showMessageDialog(frame,
-							    "User already exist in database");
+						JOptionPane.showMessageDialog(frame, "User already exist in database");
 					}
 				      
 			          	}

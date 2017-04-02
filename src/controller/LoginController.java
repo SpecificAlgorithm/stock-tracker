@@ -9,12 +9,13 @@ import model.User;
 import utility.*;
 import view.ActionEvent;
 import view.HomeView;
+import view.LoginView;
 public class LoginController  extends IController { 
 	 
 	 
 		private ValidationUtil valUtil; 
 	 
-		private DatabaseUtil databaseUtil; 
+		private DatabaseUtil databaseUtil = new DatabaseUtil(); 
 	 
 	 public void login(ActionEvent event) throws SQLException
 	 {
@@ -30,5 +31,15 @@ public class LoginController  extends IController {
 		 {
 			 JOptionPane.showMessageDialog(null,"Not Found");
 		 }
+	 }
+	 
+	 public void init()
+	 {
+		 LoginView view = new LoginView();
+		 view.init();
+	 }
+	 private boolean checkIfRemembered()
+	 {
+		 return databaseUtil.checkIfRemember();
 	 }
 } 

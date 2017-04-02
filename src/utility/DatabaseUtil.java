@@ -58,6 +58,40 @@ public class DatabaseUtil {
 		return digest;
 		
 	}
+	
+	public boolean checkIfRemember()
+	{
+		boolean remember = false;
+		Connection connection = dbconnection();
+		String query = "SELECT * FROM RememberMe";
+		ResultSet result = null;
+		 try {
+			result = connection.prepareStatement(query).executeQuery();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+
+		 try {		 
+			 remember = result.next();
+//			 boolean temp = result.last();
+//			 boolean next = result.next();
+//			boolean LAST = result.last();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+		 try {
+			 result.close();
+			connection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 return remember;
+	}
 
 	public static boolean canLogOn(ActionEvent event) throws SQLException {
 		Connection connection = dbconnection();

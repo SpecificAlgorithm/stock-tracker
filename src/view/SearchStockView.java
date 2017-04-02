@@ -11,6 +11,7 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -64,16 +65,16 @@ public class SearchStockView implements IView {
 //		this.tModel = new DefaultTableModel(ssCont.getData(), this.ssCont.getColumns());
 		
 	    this.tModel = new DefaultTableModel();
-	    this.tModel.setDataVector(ssCont.getData(null), this.ssCont.getColumns());
+	    this.tModel.setDataVector(null, this.ssCont.getColumns());
 
 	    table = new JTable(this.tModel);
 	    TableColumnModel colModel=table.getColumnModel();
 	    TableColumn col=colModel.getColumn(5);
 	    col.setPreferredWidth(30);
-	    ButtonEditor be = new ButtonEditor(new JCheckBox());
-	    be.view = this;
-	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
-	    table.getColumn("Buy").setCellEditor(be);
+//	    ButtonEditor be = new ButtonEditor(new JCheckBox());
+//	    be.view = this;
+//	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
+//	    table.getColumn("Buy").setCellEditor(be);
 
 	    JScrollPane scroll = new JScrollPane(table);
 //		table = new JTable(this.tModel);
@@ -112,6 +113,8 @@ public class SearchStockView implements IView {
 		frame.pack();
 		frame.setVisible(true);
 		
+		tModel.fireTableDataChanged();
+		
 	}
 	
 	
@@ -148,6 +151,11 @@ public class SearchStockView implements IView {
 	public void updateTable() throws IOException
 	{
 		String[][] data = client.searchStock(field.getText());
+		if(data == null)
+		{
+			JOptionPane.showMessageDialog(frame, "Stock not found");
+			this.tModel.fireTableDataChanged();
+		}
 		this.tModel.setDataVector(data, this.ssCont.getColumns());
 		
 

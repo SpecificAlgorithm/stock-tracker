@@ -89,6 +89,7 @@ public class BuyStockView implements IView {
 		contentPane.setLayout(null);
 		
 		stockLabel.setText(stockName);
+		stockLabel.setVisible(true);
 		contentPane.add(stockLabel);
 
 
