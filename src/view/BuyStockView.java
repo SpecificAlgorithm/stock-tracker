@@ -187,11 +187,14 @@ public class BuyStockView implements IView {
 																		// pattern
 																		// matches
 						try {
-							String query = "INSERT INTO OwnedStocks (Company,BoughtPrice,NumOfStocks) VALUES (?,?,?)";
+							String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent) VALUES (?,?,?,?)";
 							PreparedStatement pst = connection.prepareStatement(query);
-							pst.setString(1, Company.getText());
-							pst.setString(2, Price.getText());
+							String name = "user";
+							pst.setString(1, name);
+							pst.setString(2, stockName);
 							pst.setInt(3, multiple);
+							double spent = price * multiple;
+							pst.setDouble(4, spent);
 							pst.execute();
 							pst.close();
 
@@ -203,11 +206,14 @@ public class BuyStockView implements IView {
 
 				} else {
 					try {
-						String query = "INSERT INTO OwnedStocks (Company,BoughtPrice,NumOfStocks) VALUES (?,?,?)";
+						String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent) VALUES (?,?,?,?)";
 						PreparedStatement pst = connection.prepareStatement(query);
-						pst.setString(1, Company.getText());
-						pst.setString(2, Price.getText());
+						String name = "user";
+						pst.setString(1, name);
+						pst.setString(2, stockName);
 						pst.setInt(3, 1);
+						double spent = price * 1;
+						pst.setDouble(4, spent);
 						pst.execute();
 						pst.close();
 
