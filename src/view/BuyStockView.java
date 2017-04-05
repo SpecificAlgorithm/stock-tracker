@@ -42,7 +42,6 @@ public class BuyStockView implements IView {
 	JButton btnSell11 = new JButton();
 	JButton btnCancel11 = new JButton();
 	JLabel lblIfYouAre = new JLabel();
-//	JRadioButton rdbtnMultiple1;
 	JLabel lblNumOfStocks = new JLabel();
 	
 	
@@ -51,12 +50,13 @@ public class BuyStockView implements IView {
 	private JTextField NumOFStocks1 = new JTextField();
 	private JTextField Company1 = new JTextField();
 	private JTextField Price1 = new JTextField();
-	JRadioButton rdbtnMultiple = new JRadioButton();
+	private JTextField NumText= new JTextField();
 	JButton btnSell1 = new JButton();
 	JButton btnCancel1 = new JButton();
 	JLabel lblIfYouAre1 = new JLabel();
-	JRadioButton rdbtnMultiple1 = new JRadioButton();
-	JLabel lblNumOfStocks1 = new JLabel();
+	JLabel lblIfYouAre2 = new JLabel();
+	JRadioButton rdbtnMultiple = new JRadioButton();
+
 	
 	
 	
@@ -83,8 +83,7 @@ public class BuyStockView implements IView {
 	{
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(100, 100, 844, 545);
-		
+		frame.setBounds(100, 100, 849, 466);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		frame.setContentPane(contentPane);
 		contentPane.setLayout(null);
@@ -101,34 +100,47 @@ public class BuyStockView implements IView {
 		NumOFStocks1.setColumns(10);
 		NumOFStocks1.setVisible(false);
 		contentPane.add(NumOFStocks);
+		
+		
+		NumText = new JTextField();
+		NumText.setFont(new Font("Tahoma", Font.PLAIN, 35));
+		NumText.setBounds(328, 229, 323, 42);
+		contentPane.add(NumText);
+		NumText.setColumns(10);
+		NumText.setVisible(false);
 
 		btnSell = new JButton("Buy");
 		btnSell.setFont(new Font("Tahoma", Font.PLAIN, 37));
-		btnSell.setBounds(610, 215, 183, 53);
+		btnSell.setBounds(604, 305, 195, 61);
 		contentPane.add(btnSell);
 		
 	    btnCancel1 = new JButton("Cancel");
 		btnCancel1.setFont(new Font("Tahoma", Font.PLAIN, 37));
-		btnCancel1.setBounds(421, 215, 167, 53);
+		btnCancel1.setBounds(314, 305, 268, 61);
 		contentPane.add(btnCancel1);
 		
-		String companyName = "Name";
-		lblIfYouAre1.setText("To buy multiple stocks of " + companyName + "press \"multiple\":");
+		
+		lblIfYouAre1.setText("To buy multiple stocks of  " + stockName +  " check \"multiple\":");
 		lblIfYouAre1.setFont(new Font("Tahoma", Font.PLAIN, 35));
 		lblIfYouAre1.setBounds(11, 24, 782, 66);
 		contentPane.add(lblIfYouAre1);
+		
+		lblIfYouAre2.setText("\""+ stockName +  "\"  stock  =  "+price+" $");
+		lblIfYouAre2.setFont(new Font("Tahoma", Font.PLAIN, 35));
+		lblIfYouAre2.setBounds(11, 80, 782, 66);
+		contentPane.add(lblIfYouAre2);
 
-		rdbtnMultiple1 = new JRadioButton("multiple");
+		rdbtnMultiple = new JRadioButton("multiple");
 		rdbtnMultiple.setFont(new Font("Tahoma", Font.PLAIN, 40));
-		rdbtnMultiple1.setSelected(false);
-		rdbtnMultiple1.setBounds(91, 120, 500, 53);
-		contentPane.add(rdbtnMultiple1);
+		rdbtnMultiple.setSelected(false);
+		rdbtnMultiple.setBounds(49, 162, 317, 53);
+		contentPane.add(rdbtnMultiple);
 
-		lblNumOfStocks1 = new JLabel("Num of Stocks:");
-		lblNumOfStocks1.setFont(new Font("Tahoma", Font.PLAIN, 34));
-		lblNumOfStocks1.setBounds(97, 148, 292, 42);
-		lblNumOfStocks1.setVisible(false);
-		contentPane.add(lblNumOfStocks1);
+		lblNumOfStocks = new JLabel("Num of Stocks:");
+		lblNumOfStocks.setFont(new Font("Tahoma", Font.PLAIN, 34));
+		lblNumOfStocks.setBounds(49, 225, 292, 42);
+		lblNumOfStocks.setVisible(false);
+		contentPane.add(lblNumOfStocks);
 
 		
 		//when buying multiple
@@ -136,10 +148,10 @@ public class BuyStockView implements IView {
 			public void actionPerformed(ActionEvent e) {
 				if(rdbtnMultiple.isSelected()){                                                       // the condition
 					lblNumOfStocks.setVisible(true);
-					NumOFStocks.setVisible(true);
+					NumText.setVisible(true);
 				}else if(!rdbtnMultiple.isSelected()){
 					lblNumOfStocks.setVisible(false);
-					NumOFStocks.setVisible(false);
+					NumText.setVisible(false);
 				}
 				
 			}
@@ -304,19 +316,6 @@ public class BuyStockView implements IView {
 			}
 		});
 
-		// when buying multiple
-		rdbtnMultiple.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnMultiple.isSelected()) { // the condition
-					lblNumOfStocks.setVisible(true);
-					NumOFStocks.setVisible(true);
-				} else if (!rdbtnMultiple.isSelected()) {
-					lblNumOfStocks.setVisible(false);
-					NumOFStocks.setVisible(false);
-				}
-
-			}
-		});
 
 		// Buying Stocks
 		// Move to Handlers
