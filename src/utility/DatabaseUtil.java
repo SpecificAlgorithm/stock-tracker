@@ -82,10 +82,10 @@ public class DatabaseUtil {
 		return username != null;
 	}
 	
-	public void setRememberedUsername(String username)
+	public static void setRememberedUsername(String username)
 	{
 		Connection connection = dbconnection();
-		String query = "INSERT ? INTO RememberMe";
+		String query = "INSERT INTO RememberMe (username) VALUES (?)";
 		
 		try {
 			PreparedStatement pst = connection.prepareStatement(query);

@@ -180,6 +180,7 @@ public class LoginView   implements IView {
 					event.action = ActionType.LOGIN;
 					event.username = textPane.getText();
 					event.password = passwordField.getText();
+					
 					loginController.login(event, false, rdbtnRemeberMe.isSelected());
 				}catch(Exception e){   JOptionPane.showMessageDialog(null,"Error !!!");     }
 				}
