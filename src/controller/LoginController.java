@@ -17,26 +17,49 @@ public class LoginController  extends IController {
 	 
 		private DatabaseUtil databaseUtil = new DatabaseUtil(); 
 	 
-	 public void login(ActionEvent event) throws SQLException
+	 public void login(ActionEvent event, boolean remembered) throws SQLException
 	 {
-		 boolean logOn = DatabaseUtil.canLogOn(event);
-		 if(logOn)
+		 if(!remembered)
+		 {
+			 boolean logOn = DatabaseUtil.canLogOn(event);
+			 if(logOn)
+			 {
+				 HomeController hCont = new HomeController();
+				 User user = new User();
+				 user.setUsername(event.username);
+				 hCont.switchContext(user);
+			 }
+			 else
+			 {
+				 JOptionPane.showMessageDialog(null,"Not Found");
+			 }
+		 }
+		 else
 		 {
 			 HomeController hCont = new HomeController();
 			 User user = new User();
 			 user.setUsername(event.username);
 			 hCont.switchContext(user);
 		 }
-		 else
-		 {
-			 JOptionPane.showMessageDialog(null,"Not Found");
-		 }
+		 
+		 
+		
 	 }
 	 
-	 public void init()
+	 public void init() throws SQLException
 	 {
-		 LoginView view = new LoginView();
-		 view.init();
+		 if(!databaseUtil.checkIfRemember())
+		 {
+			LoginView view = new LoginView();
+			view.init(); 
+		 }
+		 else
+		 {
+			 ActionEvent event = new ActionEvent();
+			 event.username = databaseUtil.getRememberedUsername();
+			 this.login(event, true);
+		 }
+		 
 	 }
 	 private boolean checkIfRemembered()
 	 {

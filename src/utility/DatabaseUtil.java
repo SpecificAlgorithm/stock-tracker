@@ -61,7 +61,13 @@ public class DatabaseUtil {
 	
 	public boolean checkIfRemember()
 	{
-		boolean remember = false;
+		String username = getRememberedUsername();
+		return username != null;
+	}
+	
+	public String getRememberedUsername()
+	{
+		String username = "";
 		Connection connection = dbconnection();
 		String query = "SELECT * FROM RememberMe";
 		ResultSet result = null;
@@ -73,14 +79,13 @@ public class DatabaseUtil {
 		}
 		 
 
-		 try {		 
-			 remember = result.next();
-//			 boolean temp = result.last();
-//			 boolean next = result.next();
-//			boolean LAST = result.last();
-		} catch (SQLException e) {
+	
+		 try {
+			 username = result.getString("username");
+			 } catch (SQLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+//			e.printStackTrace();
+				 //no user is remembered!
 		}
 		 
 		 try {
@@ -90,7 +95,11 @@ public class DatabaseUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 return remember;
+		 return username;
+	}
+	public byte[] getRememberedPassword(String username)
+	{
+		return null;
 	}
 
 	public static boolean canLogOn(ActionEvent event) throws SQLException {
