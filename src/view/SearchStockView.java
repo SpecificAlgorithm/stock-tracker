@@ -39,9 +39,13 @@ public class SearchStockView implements IView {
 	
 	public String getStockName()
 	{
-		return (String) table.getModel().getValueAt(0, 0);
+		return (String) table.getModel().getValueAt(0, 1);
 	}
 
+	public double getStockPrice()
+	{
+		return Double.parseDouble((String) table.getModel().getValueAt(0, 2));
+	}
 	
 	public void switchContext(SearchStockController ssCont)
 	{

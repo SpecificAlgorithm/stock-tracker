@@ -1,5 +1,8 @@
 package controller; 
 import utility.*;
+
+import java.sql.SQLException;
+
 import model.*;
 import view.*;
 public class HomeController  extends IController { 
@@ -22,6 +25,16 @@ public class HomeController  extends IController {
 			setUser(user);
 			HomeView view = new HomeView();
 			view.start(this);
+		}
+		private void logOff()
+		{
+			LoginController lCont = new LoginController();
+			try {
+				lCont.init();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		
@@ -48,6 +61,12 @@ public class HomeController  extends IController {
 			pCont.switchContext();
 		}
 
+		public void handleLogOff()
+		{
+			utility.DatabaseUtil database = new utility.DatabaseUtil();
+			database.handleLogOff();
+			this.logOff();
+		}
 
 
 } 

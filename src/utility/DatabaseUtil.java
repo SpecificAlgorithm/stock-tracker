@@ -25,6 +25,23 @@ public class DatabaseUtil {
 	private RegistrationController registrationController;
 
 	private LoginController loginController;
+	
+	public static void handleLogOff()
+	{
+		Connection connection = dbconnection();
+		String query = "DELETE FROM RememberMe;"; //If user is remembered (or if not:P) delete any remembered users.
+		try {
+			PreparedStatement pst = connection.prepareStatement(query);
+			pst.execute();
+			pst.close();
+			connection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		
+	}
 
 	public static Connection dbconnection() {
 		try {
@@ -65,9 +82,26 @@ public class DatabaseUtil {
 		return username != null;
 	}
 	
+	public void setRememberedUsername(String username)
+	{
+		Connection connection = dbconnection();
+		String query = "INSERT ? INTO RememberMe";
+		
+		try {
+			PreparedStatement pst = connection.prepareStatement(query);
+			pst.setString(1, username);
+			pst.execute();
+			pst.close();
+			connection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	public String getRememberedUsername()
 	{
-		String username = "";
+		String username = null;
 		Connection connection = dbconnection();
 		String query = "SELECT * FROM RememberMe";
 		ResultSet result = null;
@@ -115,6 +149,7 @@ public class DatabaseUtil {
 			count++;
 		rs.close();
 		pst.close();
+		connection.close();
 		if (count == 1) {
 			return true;
 		}

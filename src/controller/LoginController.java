@@ -17,7 +17,7 @@ public class LoginController  extends IController {
 	 
 		private DatabaseUtil databaseUtil = new DatabaseUtil(); 
 	 
-	 public void login(ActionEvent event, boolean remembered) throws SQLException
+	 public void login(ActionEvent event, boolean remembered, boolean shouldRemember) throws SQLException
 	 {
 		 if(!remembered)
 		 {
@@ -36,6 +36,10 @@ public class LoginController  extends IController {
 		 }
 		 else
 		 {
+			 if(shouldRemember)
+			 {
+				 
+			 }
 			 HomeController hCont = new HomeController();
 			 User user = new User();
 			 user.setUsername(event.username);
@@ -57,7 +61,7 @@ public class LoginController  extends IController {
 		 {
 			 ActionEvent event = new ActionEvent();
 			 event.username = databaseUtil.getRememberedUsername();
-			 this.login(event, true);
+			 this.login(event, true, false);
 		 }
 		 
 	 }

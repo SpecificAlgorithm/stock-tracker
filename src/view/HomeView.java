@@ -105,6 +105,10 @@ public class HomeView   implements IView {
 			portfolioButton.setText("Portfolio");
 			addActionListenerPortfolio(portfolioButton);
 			
+			JButton logOffButton = new JButton();
+			logOffButton.setText("Log Off");
+			addActionListenerLogOff(logOffButton);
+			
 			
 			
 			
@@ -115,12 +119,24 @@ public class HomeView   implements IView {
 			panel.add(topStockButton);
 			panel.add(updateBalanceButton);
 			panel.add(portfolioButton);
+			panel.add(logOffButton);
 			
 			frame.add(panel);
 			frame.pack();
 			frame.setVisible(true);
 		}
 		
+		private void addActionListenerLogOff(JButton logOffButton)
+		{
+			logOffButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					hCont.handleLogOff();
+					
+				}
+			});
+		}
 		
 		private void addActionListenerSearch(JButton searchStockButton)
 		{

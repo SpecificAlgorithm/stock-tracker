@@ -55,7 +55,7 @@ class ButtonRenderer extends JButton implements TableCellRenderer
 		public void actionPerformed(java.awt.event.ActionEvent arg0) {
 			// TODO Auto-generated method stub
 			BuyStockView buyView = new BuyStockView();
-			buyView.buyStock(view.getStockName());
+			buyView.buyStock(view.getStockName(), view.getStockPrice());
 			fireEditingStopped();
 		}
 	    });
