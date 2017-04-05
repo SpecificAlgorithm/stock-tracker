@@ -24,6 +24,10 @@ public class LoginController  extends IController {
 			 boolean logOn = DatabaseUtil.canLogOn(event);
 			 if(logOn)
 			 {
+				 if(shouldRemember)
+				 {
+					 DatabaseUtil.setRememberedUsername(event.username);
+				 }
 				 HomeController hCont = new HomeController();
 				 User user = new User();
 				 user.setUsername(event.username);
@@ -36,10 +40,14 @@ public class LoginController  extends IController {
 		 }
 		 else
 		 {
+<<<<<<< HEAD
 			 if(shouldRemember)
 			 {
 				 
 			 }
+=======
+
+>>>>>>> origin/master
 			 HomeController hCont = new HomeController();
 			 User user = new User();
 			 user.setUsername(event.username);
