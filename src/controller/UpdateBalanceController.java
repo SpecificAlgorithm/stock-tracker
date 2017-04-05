@@ -34,9 +34,22 @@ public class UpdateBalanceController extends IController {
 		}
 	}
 	
-	public String getCurrentBalance() {
-		NumberFormat formatter = NumberFormat.getCurrencyInstance();
+	/**
+	 * Get current balance of current user
+	 * @return balance
+	 */
+	public double getCurrentBalance() {
 		double balance = DatabaseUtil.getCurrentBalance(user.getUsername());
+		return balance;
+	}
+	
+	/**
+	 * Get current balance of user and format as currency (12345 -> $12,345.00)
+	 * @return currency-formatted balance
+	 */
+	public String getCurrentFormattedBalance() {
+		NumberFormat formatter = NumberFormat.getCurrencyInstance();
+		double balance = getCurrentBalance();
 		return balance == -1 ? "" : formatter.format(balance);
 	}
 }

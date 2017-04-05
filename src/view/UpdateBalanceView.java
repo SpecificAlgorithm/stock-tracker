@@ -46,7 +46,7 @@ public class UpdateBalanceView {
 		JLabel currentBalanceText = new JLabel("Current balance:");
 		
 		// Get current balance in database in display in GUI
-		JTextField currentBalance = new JTextField(controller.getCurrentBalance());
+		JTextField currentBalance = new JTextField(controller.getCurrentFormattedBalance());
 		currentBalance.setEditable(false);
 		
 		JLabel userText = new JLabel("Enter how much money you would like to add:");
@@ -63,7 +63,7 @@ public class UpdateBalanceView {
 				if (isUpdatedBalanceSuccessful) {
 					optionPane = new JOptionPane("Updated balance successfully!",JOptionPane.INFORMATION_MESSAGE);
 					// Display new balance to text field
-					currentBalance.setText(controller.getCurrentBalance());
+					currentBalance.setText(controller.getCurrentFormattedBalance());
 					userInput.setText("");
 				} else {
 					optionPane = new JOptionPane("Balance should include only numerical characters!",JOptionPane.ERROR_MESSAGE);
