@@ -17,7 +17,7 @@ import controller.StockDetailsController;
 import view.ActionEvent;
 
 public class DatabaseUtil {
-	
+
 	private static final String DB_NAME = "StockTracker.sqlite";
 
 	private StockDetailsController stockDetailsController;
@@ -25,11 +25,12 @@ public class DatabaseUtil {
 	private RegistrationController registrationController;
 
 	private LoginController loginController;
-	
-	public static void handleLogOff()
-	{
+
+	public static void handleLogOff() {
 		Connection connection = dbconnection();
-		String query = "DELETE FROM RememberMe;"; //If user is remembered (or if not:P) delete any remembered users.
+		String query = "DELETE FROM RememberMe;"; // If user is remembered (or
+		                                          // if not:P) delete any
+		                                          // remembered users.
 		try {
 			PreparedStatement pst = connection.prepareStatement(query);
 			pst.execute();
@@ -39,15 +40,14 @@ public class DatabaseUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
-		
+
 	}
 
 	public static Connection dbconnection() {
 		try {
 
 			Class.forName("org.sqlite.JDBC");
-			
+
 			Connection Call = DriverManager
 			        .getConnection("jdbc:sqlite:" + CommonUtil.getAbsolutePathOfFile("db" + File.separator + DB_NAME));
 			return Call;
@@ -58,9 +58,8 @@ public class DatabaseUtil {
 			return null;
 		}
 	}
-	
-	private static byte[] getPasswordHash(String passwordClear)
-	{
+
+	private static byte[] getPasswordHash(String passwordClear) {
 		MessageDigest m = null;
 		try {
 			m = MessageDigest.getInstance("MD5");
@@ -73,22 +72,18 @@ public class DatabaseUtil {
 		byte[] digest = m.digest();
 		System.out.println(digest.toString());
 		return digest;
-		
+
 	}
-	
-	public boolean checkIfRemember()
-	{
+
+	public boolean checkIfRemember() {
 		String username = getRememberedUsername();
 		return username != null;
 	}
-	
 
-	public static void setRememberedUsername(String username)
-	{
+	public static void setRememberedUsername(String username) {
 		Connection connection = dbconnection();
 		String query = "INSERT INTO RememberMe (username) VALUES (?)";
 
-		
 		try {
 			PreparedStatement pst = connection.prepareStatement(query);
 			pst.setString(1, username);
@@ -99,42 +94,40 @@ public class DatabaseUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
-	public String getRememberedUsername()
-	{
+
+	public String getRememberedUsername() {
 		String username = null;
 		Connection connection = dbconnection();
 		String query = "SELECT * FROM RememberMe";
 		ResultSet result = null;
-		 try {
+		try {
 			result = connection.prepareStatement(query).executeQuery();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 
 
-	
-		 try {
-			 username = result.getString("username");
-			 } catch (SQLException e) {
+		try {
+			username = result.getString("username");
+		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-//			e.printStackTrace();
-				 //no user is remembered!
+			// e.printStackTrace();
+			// no user is remembered!
 		}
-		 
-		 try {
-			 result.close();
+
+		try {
+			result.close();
 			connection.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		 return username;
+		return username;
 	}
-	public byte[] getRememberedPassword(String username)
-	{
+
+	public byte[] getRememberedPassword(String username) {
 		return null;
 	}
 
@@ -169,18 +162,16 @@ public class DatabaseUtil {
 			CheckPst.setString(1, event.username);
 			ResultSet rs = CheckPst.executeQuery();
 			CheckPst.close();
-			if(rs.next())
-			{
+			if (rs.next()) {
 				connection.close();
 				return false;
 			}
-			
-					
+
 			String query = "INSERT INTO Users (username,password) VALUES (?,?)";
 			PreparedStatement pst = connection.prepareStatement(query);
 			pst.setString(1, event.username);
 			pst.setBytes(2, getPasswordHash(event.password));
-//			pst.setDouble(3, 0.0);
+			// pst.setDouble(3, 0.0);
 
 			pst.execute();
 			pst.close();
@@ -194,6 +185,62 @@ public class DatabaseUtil {
 			e1.printStackTrace();
 
 			return false;
+		}
+	}
+	
+	/**
+	 * Update new balance for user in database
+	 * 
+	 * @param username
+	 * @param balance
+	 */
+	public static void updateBalance(String username, double balance) {
+		String sql = "UPDATE Users SET balance = ? WHERE username = ?";
+		Connection connection = dbconnection();
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setDouble(1, balance);
+			pst.setString(2, username);
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Get current balance of user
+	 * @param username
+	 * @return
+	 */
+	public static double getCurrentBalance(String username) {
+		String sql = "SELECT balance from Users WHERE username = ?";
+		Connection connection = dbconnection();
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, username);
+			ResultSet result = pst.executeQuery();
+			return result.getDouble("balance");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 
