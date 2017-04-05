@@ -46,11 +46,16 @@ public class TopStockView implements IView {
 		String stockname = stock.getName();
 		BigDecimal stockprice = stock.getQuote().getPrice();
 */
+      Stock stock1 = null;
+      Stock stock2 = null;
+      Stock stock3 = null;
+      Stock stock4 = null;
+      Stock stock5 = null;
       
-      final String stockSymbols[];
+      final String stockSymbols[] = {"AAPL", "NVDA", "INTC", "XOM", "NKE"};
 
       Object[][] data = new Object[30][30];
-      stockSymbols = this.tsCont.getTopStocks();
+      
       try {
 			Map<String, Stock> stocks = YahooFinance.get(stockSymbols);
 			Iterator iterator = stocks.entrySet().iterator();
@@ -74,7 +79,8 @@ public class TopStockView implements IView {
                               "Price ",
                               "Net Gain",
                               "Chart/Link",};
-
+      
+      // How to sort a column 
       final JTable table = new JTable(data, columnNames);
       table.setPreferredScrollableViewportSize(new Dimension(800, 100));
       table.setFillsViewportHeight(true);

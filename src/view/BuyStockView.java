@@ -1,4 +1,5 @@
-package view;
+
+ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -78,7 +79,7 @@ public class BuyStockView implements IView {
     JLabel stockLabel = new JLabel();
 	
 
-	public void buyStock(String stockName) 
+	public void buyStock(String stockName, double price) 
 	{
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -101,26 +102,26 @@ public class BuyStockView implements IView {
 		NumOFStocks1.setVisible(false);
 		contentPane.add(NumOFStocks);
 
-		btnSell1 = new JButton("Buy");
-		btnSell1.setFont(new Font("Tahoma", Font.PLAIN, 37));
-		btnSell1.setBounds(621, 402, 183, 53);
-		contentPane.add(btnSell1);
-
-		btnCancel11 = new JButton("Cancel");
-
-		btnCancel11.setFont(new Font("Tahoma", Font.PLAIN, 37));
-		btnCancel11.setBounds(432, 402, 167, 53);
-		contentPane.add(btnCancel11);
-
-		lblIfYouAre1 = new JLabel("If you are buying multiple stocks press \"multiple\":");
+		btnSell = new JButton("Buy");
+		btnSell.setFont(new Font("Tahoma", Font.PLAIN, 37));
+		btnSell.setBounds(610, 215, 183, 53);
+		contentPane.add(btnSell);
+		
+	    btnCancel1 = new JButton("Cancel");
+		btnCancel1.setFont(new Font("Tahoma", Font.PLAIN, 37));
+		btnCancel1.setBounds(421, 215, 167, 53);
+		contentPane.add(btnCancel1);
+		
+		String companyName = "Name";
+		lblIfYouAre1.setText("To buy multiple stocks of " + companyName + "press \"multiple\":");
 		lblIfYouAre1.setFont(new Font("Tahoma", Font.PLAIN, 35));
 		lblIfYouAre1.setBounds(11, 24, 782, 66);
 		contentPane.add(lblIfYouAre1);
 
 		rdbtnMultiple1 = new JRadioButton("multiple");
-		rdbtnMultiple1.setFont(new Font("Tahoma", Font.PLAIN, 35));
+		rdbtnMultiple.setFont(new Font("Tahoma", Font.PLAIN, 40));
 		rdbtnMultiple1.setSelected(false);
-		rdbtnMultiple1.setBounds(91, 94, 317, 53);
+		rdbtnMultiple1.setBounds(91, 120, 500, 53);
 		contentPane.add(rdbtnMultiple1);
 
 		lblNumOfStocks1 = new JLabel("Num of Stocks:");
@@ -129,21 +130,22 @@ public class BuyStockView implements IView {
 		lblNumOfStocks1.setVisible(false);
 		contentPane.add(lblNumOfStocks1);
 
-		Company = new JTextField();
-		Company.setFont(new Font("Tahoma", Font.PLAIN, 32));
-		Company.setBounds(390, 214, 307, 42);
-		contentPane.add(Company);
-		Company.setColumns(10);
-
-		Price = new JTextField();
-		Price.setFont(new Font("Tahoma", Font.PLAIN, 34));
-		Price.setColumns(10);
-		Price.setBounds(390, 272, 307, 42);
-		contentPane.add(Price);
 		
+		//when buying multiple
+		rdbtnMultiple.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(rdbtnMultiple.isSelected()){                                                       // the condition
+					lblNumOfStocks.setVisible(true);
+					NumOFStocks.setVisible(true);
+				}else if(!rdbtnMultiple.isSelected()){
+					lblNumOfStocks.setVisible(false);
+					NumOFStocks.setVisible(false);
+				}
+				
+			}
+		});
 		
-		
-		
+	/*	
 		btnSell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -293,7 +295,7 @@ public class BuyStockView implements IView {
 
 			}
 		});
-
+*/
 		// when cancel button pressed
 		btnCancel1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -401,3 +403,6 @@ public class BuyStockView implements IView {
 		}
 	}
 }
+
+
+

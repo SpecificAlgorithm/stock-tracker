@@ -36,6 +36,12 @@ public class PortfolioController extends IController {
 		View = new PorfolioView();
 		View.initalize();	
 	}
+	
+	public void goBackToHome()
+	{
+		HomeController hc = new HomeController();
+		hc.switchContext(user);
+	}
 
 	
 

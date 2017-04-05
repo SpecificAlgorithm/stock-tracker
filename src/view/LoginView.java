@@ -39,6 +39,8 @@ public class LoginView   implements IView {
 		private JPasswordField passwordField_2;
 		LoginController loginController;
 		RegistrationController registerController;
+		
+		JRadioButton rdbtnRemeberMe;
 
 		
 		public void init()
@@ -47,6 +49,7 @@ public class LoginView   implements IView {
 			registerController = new RegistrationController();
 			connection = DatabaseUtil.dbconnection();
 //			this.setFrame(new JFrame());
+			frame.getContentPane().removeAll();
 			frame.setBounds(100, 100, 1046, 696);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.getContentPane().setLayout(new CardLayout(0, 0));
@@ -84,7 +87,7 @@ public class LoginView   implements IView {
 			textPane.setBounds(35, 163, 369, 54);
 			LogInPanel.add(textPane);
 			
-			JRadioButton rdbtnRemeberMe = new JRadioButton("Remember me");
+			rdbtnRemeberMe = new JRadioButton("Remember me");
 			rdbtnRemeberMe.setFont(new Font("Sitka Small", Font.PLAIN, 31));
 			rdbtnRemeberMe.setForeground(new Color(255, 0, 0));
 			rdbtnRemeberMe.setBounds(35, 371, 277, 50);
@@ -177,7 +180,7 @@ public class LoginView   implements IView {
 					event.action = ActionType.LOGIN;
 					event.username = textPane.getText();
 					event.password = passwordField.getText();
-					loginController.login(event, false);
+					loginController.login(event, false, rdbtnRemeberMe.isSelected());
 				}catch(Exception e){   JOptionPane.showMessageDialog(null,"Error !!!");     }
 				}
 			});
@@ -188,7 +191,6 @@ public class LoginView   implements IView {
 				public void actionPerformed(ActionEvent e) {
 					LogInPanel.setVisible(false);
 					Registeration.setVisible(true);
-					
 				}
 			});
 

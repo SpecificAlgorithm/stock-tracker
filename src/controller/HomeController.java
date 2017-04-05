@@ -1,5 +1,12 @@
 package controller; 
 import utility.*;
+
+<<<<<<< HEAD
+import javax.swing.JOptionPane;
+=======
+import java.sql.SQLException;
+>>>>>>> origin/master
+
 import model.*;
 import view.*;
 public class HomeController  extends IController { 
@@ -14,14 +21,31 @@ public class HomeController  extends IController {
 		
 		public void switchContext(User user)
 		{
+			// Declaring the controllers for the buttons
 			ssCont = new SearchStockController();
 			tscCont = new TopStockController();
 			ubCont = new UpdateBalanceController();
 			pCont = new PortfolioController();
 			System.out.println(user.getUsername());
+			
+			// Basing the session on the specific user
 			setUser(user);
+			
+			// Creating a HomeView instance
 			HomeView view = new HomeView();
+			
+			// Opening the Home view here
 			view.start(this);
+		}
+		private void logOff()
+		{
+			LoginController lCont = new LoginController();
+			try {
+				lCont.init();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		
@@ -35,6 +59,8 @@ public class HomeController  extends IController {
 	 
 		public void switchToTopStockContext()
 		{
+			// Calling the TopStock here
+			//JOptionPane.showMessageDialog(null,"Top Stock View Successful!");
 			tscCont.switchContext();
 		}
 
@@ -48,6 +74,12 @@ public class HomeController  extends IController {
 			pCont.switchContext();
 		}
 
+		public void handleLogOff()
+		{
+			utility.DatabaseUtil database = new utility.DatabaseUtil();
+			database.handleLogOff();
+			this.logOff();
+		}
 
 
 } 

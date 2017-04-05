@@ -8,8 +8,11 @@ import java.util.concurrent.Executor;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
+import controller.HomeController;
 import controller.IController;
 import controller.PortfolioController;
+import controller.SearchStockController;
 import model.Stock;
 import utility.CommonUtil;
 import utility.YahooClient;
@@ -82,6 +85,8 @@ import utility.YahooClient;
 import yahoofinance.YahooFinance;
 
 public class PorfolioView implements IView {
+	
+	private PortfolioController pcCont;
    
 	
 	// sellStock function Variables
@@ -129,6 +134,16 @@ public class PorfolioView implements IView {
     TableRowSorter<TableModel> sorter;
     int i = 100000;
     int cost = 5000;
+    
+    // Back button takes the user to the HomeView
+    JButton backBtn = new JButton("Go Back");
+    
+    
+    
+  
+    
+    
+    
 	//
 	//PorfolioController controller;
 	
@@ -211,10 +226,36 @@ public class PorfolioView implements IView {
                 }
             }
         });
+        
+        
+        
+        
+        
+        JButton backBtn = new JButton();
+		backBtn.setText("go back");
+		
+		backBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	JOptionPane.showMessageDialog(backBtn, "Back button pressed...");
+            	//frame.setVisible(false);
+            	pcCont = new PortfolioController();
+            	pcCont.goBackToHome();
+            }
+        });
+		
+        
+   
+        
+        
+        
         flowLayoutPanel.add(area1);
         flowLayoutPanel.add(area);
         flowLayoutPanel.add(searchTextField);
         flowLayoutPanel.add(searchBtn);
+        
+        // Added back button here. 
+        flowLayoutPanel.add(backBtn);
+        
         panel.add(flowLayoutPanel,BorderLayout.NORTH);
         panel.add(scrollPane , BorderLayout.CENTER);
         panel.add(button, BorderLayout.PAGE_END);
@@ -305,7 +346,6 @@ public class PorfolioView implements IView {
 		frame.setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		
 		NumOFStocks.setFont(new Font("Tahoma", Font.PLAIN, 35));
 		NumOFStocks.setBounds(380, 148, 323, 42);
 		contentPane.add(NumOFStocks);
@@ -360,6 +400,9 @@ public class PorfolioView implements IView {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		frame.setContentPane(contentPane);
 		contentPane.setLayout(null);
+		
+		// Add the back button to go to the HomeView
+		
 
 		NumOFStocks1 = new JTextField();
 		NumOFStocks1.setFont(new Font("Tahoma", Font.PLAIN, 35));

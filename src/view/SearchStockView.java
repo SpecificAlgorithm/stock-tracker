@@ -30,18 +30,24 @@ import utility.YahooClient;
 public class SearchStockView implements IView {
 	
 	private JTable table;
-	private SearchStockController ssCont;
+	
 	YahooClient client = new YahooClient();
 	JTextField field;
 	JPanel panel;
 	JScrollPane scroll;
 	DefaultTableModel tModel;
+
+	private SearchStockController ssCont;
 	
 	public String getStockName()
 	{
-		return (String) table.getModel().getValueAt(0, 0);
+		return (String) table.getModel().getValueAt(0, 1);
 	}
 
+	public double getStockPrice()
+	{
+		return Double.parseDouble((String) table.getModel().getValueAt(0, 2));
+	}
 	
 	public void switchContext(SearchStockController ssCont)
 	{
