@@ -1,15 +1,13 @@
 package controller; 
 import utility.*;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 import javax.swing.JOptionPane;
-=======
+
 import java.sql.SQLException;
->>>>>>> origin/master
-=======
+
 import java.sql.SQLException;
->>>>>>> origin/master
+
 
 import model.*;
 import view.*;

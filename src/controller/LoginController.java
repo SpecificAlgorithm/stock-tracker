@@ -40,14 +40,8 @@ public class LoginController  extends IController {
 		 }
 		 else
 		 {
-<<<<<<< HEAD
-			 if(shouldRemember)
-			 {
-				 
-			 }
-=======
 
->>>>>>> origin/master
+		
 			 HomeController hCont = new HomeController();
 			 User user = new User();
 			 user.setUsername(event.username);
