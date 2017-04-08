@@ -12,6 +12,7 @@ import controller.HomeController;
 import controller.IController;
 import controller.SearchStockController;
 import controller.UpdateBalanceController;
+import controller.AlertController;
 
 public class HomeView   implements IView { 
 	 
@@ -29,6 +30,8 @@ public class HomeView   implements IView {
 		private StockDetailsView stockDetailsView;  
 	 
 		private HomeController hCont;
+		
+		private AlertView AlertView;
 	 
 //		public final TreeTableView getStockListView() {
 //			return this.stockListView;
@@ -71,6 +74,9 @@ public class HomeView   implements IView {
 		public final void setStockDetailsView(final StockDetailsView some) {
 			this.stockDetailsView = some;
 		} 
+		public final void AlertView(final AlertView some) {
+			this.AlertView = some;
+		}
 		
 		@Override
 		public IController getController() {
@@ -105,6 +111,10 @@ public class HomeView   implements IView {
 			portfolioButton.setText("Portfolio");
 			addActionListenerPortfolio(portfolioButton);
 			
+			JButton alertButton = new JButton();
+			alertButton.setText("Alert");
+			addActionListenerAlert(alertButton);
+			
 			JButton logOffButton = new JButton();
 			logOffButton.setText("Log Off");
 			addActionListenerLogOff(logOffButton);
@@ -119,6 +129,7 @@ public class HomeView   implements IView {
 			panel.add(topStockButton);
 			panel.add(updateBalanceButton);
 			panel.add(portfolioButton);
+			panel.add(alertButton);
 			panel.add(logOffButton);
 			
 			frame.add(panel);
@@ -179,6 +190,17 @@ public class HomeView   implements IView {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					hCont.switchToPortfolioContext();
+					
+				}
+			});
+		}
+		private void addActionListenerAlert(JButton alertButton)
+		{
+			alertButton.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					AlertView.Alert();
 					
 				}
 			});
