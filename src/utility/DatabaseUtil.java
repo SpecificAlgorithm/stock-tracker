@@ -17,7 +17,7 @@ import controller.RegistrationController;
 import controller.StockDetailsController;
 import model.User;
 import view.ActionEvent;
-
+import javax.swing.*;
 public class DatabaseUtil {
 
 	private static final String DB_NAME = "StockTracker.sqlite";
@@ -29,29 +29,42 @@ public class DatabaseUtil {
 	private LoginController loginController;
 	
 	
-	public static void buyStock(User user, String ticker, int num, double price)
+	public static void buyStock(User user, String stockName, int multiple, double price,JFrame frame)
 	{
-		Connection connection = dbconnection();
-		String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent, date) VALUES (?,?,?,?,?)";
-		PreparedStatement pst;
-		try {
-			pst = connection.prepareStatement(query);
-			String name = user.getUsername();
-			pst.setString(1, name);
-			pst.setString(2, ticker);
-			pst.setInt(3, num);
 
-			double spent = price * num;
-			pst.setDouble(4, spent);
-			pst.setInt(5, (int) Instant.now().toEpochMilli());
-			pst.execute();
-			pst.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		String name = user.getUsername();
 		
+		double balance = getCurrentBalance(name);
+		Connection connection = dbconnection();
+		double spent = getSpent(name,stockName);
+		
+				try {
+					if(multiple*price < balance){
+						
+					
+					String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent,date) VALUES (?,?,?,?,?)";
+					PreparedStatement pst = connection.prepareStatement(query);
+					
+					pst.setString(1, name);
+					pst.setString(2, stockName);
+					pst.setInt(3, multiple);
+					spent = price * multiple;
+					pst.setDouble(4, spent);
+					pst.setInt(5, (int) Instant.now().toEpochMilli());
+					pst.execute();
+					pst.close();
+					balance = balance - spent;      // update balancess
+					updateBalance(name, balance);
+					frame.setVisible(false);
+					
+					}else  JOptionPane.showMessageDialog(null, "Your balance does not allow the transaction  ");
+					
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(null, "cant insert !!!");
+				}
 	}
+		
+
 	public static boolean canFundsDedect(User user, double value)
 	{
 		Connection connection = dbconnection();

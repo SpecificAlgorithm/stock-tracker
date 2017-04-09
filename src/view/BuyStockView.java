@@ -165,83 +165,35 @@ public class BuyStockView implements IView {
 		
 	
 		// when cancel button pressed
-		btnCancel1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				contentPane.setVisible(false);
-				// find buy sell FIXME !!!!!!! FIX ME
-			}
-		});
+				btnCancel1.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent arg0) {
+						frame.setVisible(false);
+					}
+				});
 
 
 		// Buying Stocks
 		// Move to Handlers
 		btnSell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			if(rdbtnMultiple.isSelected())
-			{
-				String Num_Pat = "^[0-9]{1,2}$"; // Reg exp pattern
-				String Input = NumText.getText(); // getting User input
-
-				if(bsCont.validNumber(Num_Pat, Input))
+				int multiple  = 1;
+				boolean checked = false;
+				if (rdbtnMultiple.isSelected()) {
+					String Num_Pat = "^[0-9]{1,2}$"; 
+					String Input = NumText.getText(); 
+					multiple = Integer.parseInt(Input); 
+					utility.CommonUtil temp = new utility.CommonUtil();	
+					checked = temp.regexChecker(Num_Pat, Input);
+				}
+				if (checked || multiple == 1 ) {
 				{
-					bsCont.buyStock(user, stockName, Integer.parseInt(Input), price);
+					bsCont.buyStock(user, stockName, multiple, price,frame);
 				}
 			}
 			else
 			{
-				bsCont.buyStock(user, stockName, 1, price);
+				  JOptionPane.showMessageDialog(null," Sorry, Input should be '1' to '99' !!!");  
 			}
-//				Connection connection = dbconnection();
-//				if (rdbtnMultiple.isSelected()) {
-//					String Num_Pat = "^[0-9]{1,2}$"; // Reg exp pattern
-//					String Input = NumText.getText(); // getting User input
-//					int multiple = Integer.parseInt(Input); // change the input
-//					utility.CommonUtil temp = new utility.CommonUtil();							// to int
-//					if (temp.regexChecker(Num_Pat, Input)) { // check if the
-//																// pattern is
-//																// right
-//						JOptionPane.showMessageDialog(null, "Match"); // send a
-//																		// message
-//																		// that
-//																		// the
-//																		// pattern
-//																		// matches
-//						try {
-//							String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent) VALUES (?,?,?,?)";
-//							PreparedStatement pst = connection.prepareStatement(query);
-//							String name = "user";
-//							pst.setString(1, name);
-//							pst.setString(2, stockName);
-//							pst.setInt(3, multiple);
-//							double spent = price * multiple;
-//							pst.setDouble(4, spent);
-//							pst.execute();
-//							pst.close();
-//
-//						} catch (Exception e1) {
-//							JOptionPane.showMessageDialog(null, "cant insert !!!");
-//						}
-//					} else
-//						JOptionPane.showMessageDialog(null, "Input should be 2-99");
-//
-//				} else {
-//					try {
-//						String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent) VALUES (?,?,?,?)";
-//						PreparedStatement pst = connection.prepareStatement(query);
-//						String name = "user";
-//						pst.setString(1, name);
-//						pst.setString(2, stockName);
-//						pst.setInt(3, 1);
-//						double spent = price * 1;
-//						pst.setDouble(4, spent);
-//						pst.execute();
-//						pst.close();
-//
-//					} catch (Exception e1) {
-//						JOptionPane.showMessageDialog(null, "be Patient !!!");
-//					}
-//
-//				}
 
 			}
 		});
