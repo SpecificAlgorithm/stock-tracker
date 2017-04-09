@@ -359,9 +359,9 @@ public class DatabaseUtil {
 		try {
 			pst = connection.prepareStatement(sql);
 			pst.setString(1, username);
-			pst.setString(1, stockname);
+			pst.setString(2, stockname);
 			ResultSet result = pst.executeQuery();
-			return result.getInt("spent");
+			return result.getDouble("spent");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
