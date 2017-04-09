@@ -85,7 +85,6 @@ public class TopStockView implements IView {
       
       // How to sort a column 
       final JTable table = new JTable(data, columnNames);
-      table.setPreferredScrollableViewportSize(new Dimension(800, 100));
       table.setFillsViewportHeight(true);
       Action buyButtons = new AbstractAction()
       {
