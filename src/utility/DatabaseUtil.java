@@ -57,7 +57,10 @@ public class DatabaseUtil {
 					updateBalance(name, balance);
 					frame.setVisible(false);
 					
-					}else  JOptionPane.showMessageDialog(null, "Your balance does not allow the transaction  ");
+					}else  {
+						System.out.println(getnameStock(name));
+						JOptionPane.showMessageDialog(null, "Your balance does not allow the transaction  ");
+					}
 					
 				} catch (Exception e1) {
 					JOptionPane.showMessageDialog(null, "cant insert !!!");
@@ -329,6 +332,70 @@ public class DatabaseUtil {
 		}
 	}
 	
+	/**
+	 * Get the ticker symbol of user
+	 * @return
+	 */
+	
+	
+	//FIXME TODO
+public static int getTransNum() {
+		
+	    String sql = "select * from OwnedStock where rowid = (SELECT max(rowid) FROM OwnedStock)";
+		Connection connection = dbconnection();
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			
+			ResultSet result = pst.executeQuery();
+			return result.getInt("rowid");
+		} catch (SQLException e) {
+			// Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				//  Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+/**
+ * Get Ticker for user in database
+ * 
+ * @param username
+ */
+	
+	public static String getnameStock(String username) {
+		
+		String sql = "SELECT Ticker from OwnedStock WHERE username = ?";
+		Connection connection = dbconnection();
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, username);
+			ResultSet result = pst.executeQuery();
+			return result.getString("Ticker");
+		} catch (SQLException e) {
+			//  Auto-generated catch block
+			e.printStackTrace();
+			return "ERRoR";
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				//  Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	
+	
 	public static double getnumberOwned(String username) {
 		String sql = "SELECT numberOwned from OwnedStock WHERE username = ?";
 		Connection connection = dbconnection();
@@ -339,14 +406,14 @@ public class DatabaseUtil {
 			ResultSet result = pst.executeQuery();
 			return result.getInt("numberOwned");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+			//  Auto-generated catch block
 			e.printStackTrace();
 			return -1;
 		} finally {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
+				//  Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
