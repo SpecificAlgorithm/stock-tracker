@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -28,6 +29,7 @@ import javax.swing.table.TableRowSorter;
 
 import controller.IController;
 import utility.CommonUtil;
+import utility.DatabaseUtil;
 
 public class SellStockView implements IView {
 
@@ -35,12 +37,14 @@ public class SellStockView implements IView {
     protected static final boolean DEBUG = false;
 	private JFrame frame;
 	private JTextField NumTextField;
-	Connection connection = null;                     //remove TODO
-
+	Connection connection = null;   
 	
-	private void initialize() {
-		
-		//sconnection = SQL.dbconnection();
+	DatabaseUtil database = new DatabaseUtil();
+	String name = "user";
+    double balance = database.getCurrentBalance(name);
+    double num = database.getnumberOwned(name);
+    double getspent = 0.0;
+	private void initialize(String stockName, double price) {
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 699, 274);
@@ -117,58 +121,102 @@ public class SellStockView implements IView {
 		
 		btnSell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			
-				//Getting the number Inserted
-				int NumberOfStocks = 1;
-				String Input = NumTextField.getText();
-				NumberOfStocks = Integer.parseInt(Input); 
-				
-				try{
+				Connection connection = dbconnection();            //  currentBalance    and      numOwned   from DB
+				PreparedStatement pst;
+				int multiple  = 1;
+				boolean checked = false;
+				if (rdbtnMultiple.isSelected()) {
+					String Num_Pat = "^[0-9]{1,3}$"; 
+					String Input = NumTextField.getText(); 
+					multiple = Integer.parseInt(Input); 
+					utility.CommonUtil temp = new utility.CommonUtil();	
+					checked = temp.regexChecker(Num_Pat, Input);
+				}
+				if (checked || multiple == 1 ) {                                          // check if either the multiple number is valid or multipe is unpressed
+
+						
+						getspent = database.getSpent(name, stockName);                       // uses DB FUNCs
+					//    selection ends
+					if(multiple <= num){                                              //case when user have enough stocks
+						//finish the transaction
+						// SELLING IS PROCESSING
 					
-					String name = "user";     // String Text
-					String CoName = "Google";
-					
-					//String updateTableSQL = "UPDATE OwnedStock SET numberOwned = ? WHERE Ticker = ? AND  username = ?";
-					//PreparedStatement preparedStatement = connection.prepareStatement(updateTableSQL);
-					//preparedStatement.setInt(1, 444);
-					//preparedStatement.setString(2,CoName);
-					//preparedStatement.setString(3, name);
-					// execute insert SQL stetement
-					//preparedStatement .executeUpdate();
-			        
-					String sql = "UPDATE OwnedStock SET numberOwned=? WHERE username = ?";
-					 
-					PreparedStatement statement = connection.prepareStatement(sql);
-                    statement.setInt(1, 4);
-					statement.setString(2, name);
-                    
-					int rowsUpdated = statement.executeUpdate();
-					if (rowsUpdated > 0) {
-					    System.out.println("An existing user was updated successfully!");
+					    if(num > 1){                                                     //case when user have more than one stock
+						try {
+							balance = balance + (multiple*price);
+							database.updateBalance(name, balance);
+							
+						    num = num - multiple;
+						    getspent = getspent - (multiple*price);
+						    database.updateSpent_Owned(name, stockName, getspent, num);
+							
+							frame.setVisible(false);
+							
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, "Cant insert new data to the database in the many option !!!");
+						}
+					    }else if(num == 1)	{                                //case when user have just than one stock
+					    	try{	
+					    		balance = balance + (multiple*price);
+    							String query = "DELETE FROM OwnedStock WHERE Ticker = ? AND numberOwned = ?";                // first check if subtract
+    						    pst = connection.prepareStatement(query);
+    						    pst.setString(1, stockName);
+    						    pst.setDouble(2, num); 
+    						    database.updateBalance(name, balance);
+    						    pst.execute();
+    						    pst.close();
+    						    
+    					    	}catch(Exception e1){  
+    				                   JOptionPane.showMessageDialog(null," Cant delete the one stock!!!");   
+    			                          }
+					    }else{
+					    	  JOptionPane.showMessageDialog(null," Major ERROR GO GET REFUND!!!");   
+					    }
+					    
+					}else if (multiple > num){
+					       JOptionPane.showMessageDialog(null," Sorry, you do not own that many!!!"); 
 					}
-			        
-			        
-			       statement.close();
-			       
-				}catch(Exception e1){   JOptionPane.showMessageDialog(null,"Error !!!");     }
-				// Copy Finish
-				
+					
+					
+					
+					}else{
+						JOptionPane.showMessageDialog(null," Please, Input a number 1 to 99!!!"); 
+					}
+					
 			}
 		});
 	
 	}
 
 
-	@Override
-	public IController getController() {
-		// TODO Auto-generated method stub
+
+@Override
+public IController getController() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public void setController(IController some) {
+	// TODO Auto-generated method stub
+	
+}
+
+public static Connection dbconnection() {
+	try {
+
+		Class.forName("org.sqlite.JDBC");
+		
+		Connection Call = DriverManager
+		        .getConnection("jdbc:sqlite:" + CommonUtil.getAbsolutePathOfFile("db" + File.separator + "StockTracker.sqlite"));
+		return Call;
+
+	} catch (Exception e) {
+
+		JOptionPane.showMessageDialog(null, "Disconnected");
 		return null;
 	}
-
-
-	@Override
-	public void setController(IController some) {
-		// TODO Auto-generated method stub
-		
-	}
 }
+}
+
+

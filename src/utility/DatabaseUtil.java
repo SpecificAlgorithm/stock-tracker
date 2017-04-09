@@ -264,6 +264,30 @@ public class DatabaseUtil {
 		}
 	}
 	
+	public static void updateSpent_Owned(String username,String stockname, double spent,double OwnedStocks) {
+		String sql = "UPDATE OwnedStock SET numberOwned = ? AND spent = ? WHERE username = ? AND Ticker = ?";
+		Connection connection = dbconnection();
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setDouble(1, OwnedStocks);
+			pst.setDouble(1, spent);
+			pst.setString(2, username);
+			pst.setString(2, stockname);
+			pst.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	/**
 	 * Get current balance of user
 	 * @param username
@@ -278,6 +302,53 @@ public class DatabaseUtil {
 			pst.setString(1, username);
 			ResultSet result = pst.executeQuery();
 			return result.getDouble("balance");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static double getnumberOwned(String username) {
+		String sql = "SELECT numberOwned from OwnedStock WHERE username = ?";
+		Connection connection = dbconnection();
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, username);
+			ResultSet result = pst.executeQuery();
+			return result.getInt("numberOwned");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static double getSpent(String username,String stockname) {
+		String sql = "SELECT spent from OwnedStock WHERE username = ? AND Ticker = ?";
+		Connection connection = dbconnection();
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, username);
+			pst.setString(1, stockname);
+			ResultSet result = pst.executeQuery();
+			return result.getInt("spent");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
