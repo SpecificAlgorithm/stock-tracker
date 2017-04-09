@@ -176,10 +176,9 @@ public class SearchStockView implements IView {
 	              JTable table = (JTable)e.getSource();
 	              int modelRow = Integer.valueOf( e.getActionCommand() );
 	              
-	              BuyStockView buyStock = new BuyStockView();
-//	              BigDecimal temp = (BigDecimal) table.getModel().getValueAt(modelRow, 2);
 	              
-	              buyStock.buyStock(table.getModel().getValueAt(modelRow, 1).toString(),  Double.parseDouble((String) table.getModel().getValueAt(modelRow, 2)));
+	              ssCont.buyStock(ssCont.user, table.getModel().getValueAt(modelRow, 1).toString(), Double.parseDouble((String) table.getModel().getValueAt(modelRow, 2)));
+	              BuyStockView buyStock = new BuyStockView();
 	          }
 	      };
 	       

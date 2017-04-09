@@ -26,16 +26,22 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import controller.BuyStockController;
 import controller.IController;
+import model.User;
 import utility.CommonUtil;
 import utility.YahooClient;
+
+import controller.*;
 
 
 public class BuyStockView implements IView {
 	
+	private BuyStockController bsCont = new BuyStockController();
+	
 	private JPanel contentPane = new JPanel();
 	private JTextField NumOFStocks = new JTextField();
-	private JButton btnSell = new JButton();
+	private JButton btnSell = new JButton(); //THis is actually the buy button.  SHould consider a rename here
 	private JButton btnCancel = new JButton();
 	private JTextField Company = new JTextField();
 	private JTextField Price = new JTextField();
@@ -79,7 +85,7 @@ public class BuyStockView implements IView {
     JLabel stockLabel = new JLabel();
 	
 
-	public void buyStock(String stockName, double price) 
+	public void buyStock(User user, String stockName, double price) 
 	{
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -171,57 +177,71 @@ public class BuyStockView implements IView {
 		// Move to Handlers
 		btnSell.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Connection connection = dbconnection();
-				if (rdbtnMultiple.isSelected()) {
-					String Num_Pat = "^[0-9]{1,2}$"; // Reg exp pattern
-					String Input = NumText.getText(); // getting User input
-					int multiple = Integer.parseInt(Input); // change the input
-					utility.CommonUtil temp = new utility.CommonUtil();							// to int
-					if (temp.regexChecker(Num_Pat, Input)) { // check if the
-																// pattern is
-																// right
-						JOptionPane.showMessageDialog(null, "Match"); // send a
-																		// message
-																		// that
-																		// the
-																		// pattern
-																		// matches
-						try {
-							String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent) VALUES (?,?,?,?)";
-							PreparedStatement pst = connection.prepareStatement(query);
-							String name = "user";
-							pst.setString(1, name);
-							pst.setString(2, stockName);
-							pst.setInt(3, multiple);
-							double spent = price * multiple;
-							pst.setDouble(4, spent);
-							pst.execute();
-							pst.close();
+			if(rdbtnMultiple.isSelected())
+			{
+				String Num_Pat = "^[0-9]{1,2}$"; // Reg exp pattern
+				String Input = NumText.getText(); // getting User input
 
-						} catch (Exception e1) {
-							JOptionPane.showMessageDialog(null, "cant insert !!!");
-						}
-					} else
-						JOptionPane.showMessageDialog(null, "Input should be 2-99");
-
-				} else {
-					try {
-						String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent) VALUES (?,?,?,?)";
-						PreparedStatement pst = connection.prepareStatement(query);
-						String name = "user";
-						pst.setString(1, name);
-						pst.setString(2, stockName);
-						pst.setInt(3, 1);
-						double spent = price * 1;
-						pst.setDouble(4, spent);
-						pst.execute();
-						pst.close();
-
-					} catch (Exception e1) {
-						JOptionPane.showMessageDialog(null, "be Patient !!!");
-					}
-
+				if(bsCont.validNumber(Num_Pat, Input))
+				{
+					bsCont.buyStock(user, stockName, Integer.parseInt(Input), price);
 				}
+			}
+			else
+			{
+				bsCont.buyStock(user, stockName, 1, price);
+			}
+//				Connection connection = dbconnection();
+//				if (rdbtnMultiple.isSelected()) {
+//					String Num_Pat = "^[0-9]{1,2}$"; // Reg exp pattern
+//					String Input = NumText.getText(); // getting User input
+//					int multiple = Integer.parseInt(Input); // change the input
+//					utility.CommonUtil temp = new utility.CommonUtil();							// to int
+//					if (temp.regexChecker(Num_Pat, Input)) { // check if the
+//																// pattern is
+//																// right
+//						JOptionPane.showMessageDialog(null, "Match"); // send a
+//																		// message
+//																		// that
+//																		// the
+//																		// pattern
+//																		// matches
+//						try {
+//							String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent) VALUES (?,?,?,?)";
+//							PreparedStatement pst = connection.prepareStatement(query);
+//							String name = "user";
+//							pst.setString(1, name);
+//							pst.setString(2, stockName);
+//							pst.setInt(3, multiple);
+//							double spent = price * multiple;
+//							pst.setDouble(4, spent);
+//							pst.execute();
+//							pst.close();
+//
+//						} catch (Exception e1) {
+//							JOptionPane.showMessageDialog(null, "cant insert !!!");
+//						}
+//					} else
+//						JOptionPane.showMessageDialog(null, "Input should be 2-99");
+//
+//				} else {
+//					try {
+//						String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent) VALUES (?,?,?,?)";
+//						PreparedStatement pst = connection.prepareStatement(query);
+//						String name = "user";
+//						pst.setString(1, name);
+//						pst.setString(2, stockName);
+//						pst.setInt(3, 1);
+//						double spent = price * 1;
+//						pst.setDouble(4, spent);
+//						pst.execute();
+//						pst.close();
+//
+//					} catch (Exception e1) {
+//						JOptionPane.showMessageDialog(null, "be Patient !!!");
+//					}
+//
+//				}
 
 			}
 		});

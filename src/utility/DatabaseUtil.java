@@ -8,12 +8,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 
 import javax.swing.JOptionPane;
 
 import controller.LoginController;
 import controller.RegistrationController;
 import controller.StockDetailsController;
+import model.User;
 import view.ActionEvent;
 
 public class DatabaseUtil {
@@ -25,6 +27,52 @@ public class DatabaseUtil {
 	private RegistrationController registrationController;
 
 	private LoginController loginController;
+	
+	
+	public static void buyStock(User user, String ticker, int num, double price)
+	{
+		Connection connection = dbconnection();
+		String query = "INSERT INTO OwnedStock (username,Ticker,numberOwned,spent, date) VALUES (?,?,?,?,?)";
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(query);
+			String name = user.getUsername();
+			pst.setString(1, name);
+			pst.setString(2, ticker);
+			pst.setInt(3, num);
+
+			double spent = price * num;
+			pst.setDouble(4, spent);
+			pst.setInt(5, (int) Instant.now().toEpochMilli());
+			pst.execute();
+			pst.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	public static boolean canFundsDedect(User user, double value)
+	{
+		Connection connection = dbconnection();
+		String query = "SELECT balance FROM Users u WHERE u.username = ?";
+		try {
+			PreparedStatement pst = connection.prepareStatement(query);
+			pst.setString(1, user.getUsername());
+			ResultSet result = pst.executeQuery();
+			double funds = result.getDouble(1);
+			pst.close();
+			connection.close();
+			if(funds - value < 0) return false;
+			else return true;
+			
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 	public static void handleLogOff() {
 		Connection connection = dbconnection();

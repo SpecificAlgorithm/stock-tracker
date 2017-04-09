@@ -97,7 +97,7 @@ public class TopStockView implements IView {
               BuyStockView buyStock = new BuyStockView();
               BigDecimal temp = (BigDecimal) table.getModel().getValueAt(modelRow, 2);
               
-              buyStock.buyStock(table.getModel().getValueAt(modelRow, 1).toString(), temp.doubleValue());
+              buyStock.buyStock(tsCont.user, table.getModel().getValueAt(modelRow, 1).toString(), temp.doubleValue());
           }
       };
        

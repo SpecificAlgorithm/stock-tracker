@@ -2,7 +2,9 @@ package controller;
 
 import java.io.IOException;
 
+import model.User;
 import utility.YahooClient;
+import view.BuyStockView;
 import view.SearchStockView;
 
 public class SearchStockController extends IController{
@@ -37,6 +39,12 @@ public class SearchStockController extends IController{
 		return data;
 	}
 	
+	public void buyStock(User user, String ticker, double price)
+	{
+		BuyStockView buyStock = new BuyStockView();
+        
+        buyStock.buyStock(user, ticker, price);
+	}
 	
 	public void goBackToHome()
 	{
