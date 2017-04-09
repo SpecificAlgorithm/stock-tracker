@@ -7,11 +7,15 @@ package view;
 */
 
 import javax.print.DocFlavor.STRING;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import controller.HomeController;
 import controller.IController;
@@ -46,13 +50,9 @@ public class TopStockView implements IView {
 		String stockname = stock.getName();
 		BigDecimal stockprice = stock.getQuote().getPrice();
 */
-      Stock stock1 = null;
-      Stock stock2 = null;
-      Stock stock3 = null;
-      Stock stock4 = null;
-      Stock stock5 = null;
       
-      final String stockSymbols[] = {"AAPL", "NVDA", "INTC", "XOM", "NKE"};
+      String stockSymbols[] = tsCont.getTopStocks();
+
 
       Object[][] data = new Object[30][30];
       
@@ -61,12 +61,13 @@ public class TopStockView implements IView {
 			Iterator iterator = stocks.entrySet().iterator();
 			int row = 0;
 			int col = 0;
+			utility.YahooClient yahooClient = new utility.YahooClient();
 			while (iterator.hasNext()) {
 				@SuppressWarnings("rawtypes")
 				Map.Entry pair = (Map.Entry)iterator.next();
 				Stock stock = (Stock) pair.getValue();
-				Object[] temp = {stock.getName(), stock.getQuote().getPrice(), null, null};
-				for (int i = 0; i < 4; i ++) {
+				Object[] temp = {stock.getName(), stock.getSymbol(), stock.getQuote().getPrice(), yahooClient.getNetGainFromYesterday(stock), yahooClient.getURL(stock.getSymbol()), stock.getSymbol()};
+				for (int i = 0; i < 5; i ++) {
 					data[row][i] = temp[i]; 
 				}
 				row ++;
@@ -76,14 +77,32 @@ public class TopStockView implements IView {
 			e2.printStackTrace();
 		}
       String[] columnNames = {"Company",
+    		  				  "Ticker",
                               "Price ",
                               "Net Gain",
-                              "Chart/Link",};
+                              "Chart/Link",
+                              "Buy"};
       
       // How to sort a column 
       final JTable table = new JTable(data, columnNames);
       table.setPreferredScrollableViewportSize(new Dimension(800, 100));
       table.setFillsViewportHeight(true);
+      Action buyButtons = new AbstractAction()
+      {
+          public void actionPerformed(ActionEvent e)
+          {
+              JTable table = (JTable)e.getSource();
+              int modelRow = Integer.valueOf( e.getActionCommand() );
+              
+              BuyStockView buyStock = new BuyStockView();
+              BigDecimal temp = (BigDecimal) table.getModel().getValueAt(modelRow, 2);
+              
+              buyStock.buyStock(table.getModel().getValueAt(modelRow, 1).toString(), temp.doubleValue());
+          }
+      };
+       
+      ButtonColumn buttonColumn = new ButtonColumn(table, buyButtons, 5);
+
 
       if (DEBUG) {
           table.addMouseListener(new MouseAdapter() {
@@ -184,3 +203,4 @@ private void printDebugData(JTable table) {
 	  return button;
   }
 }
+

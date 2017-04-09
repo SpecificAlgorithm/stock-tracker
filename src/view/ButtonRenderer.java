@@ -13,7 +13,7 @@ import javax.swing.table.TableCellRenderer;
 
 class ButtonRenderer extends JButton implements TableCellRenderer 
 {
-
+	
 
 	  public ButtonRenderer() {
 	    setOpaque(true);
@@ -39,9 +39,13 @@ class ButtonRenderer extends JButton implements TableCellRenderer
 
 	class ButtonEditor extends DefaultCellEditor {
 		public SearchStockView view;
+		public JTable table;
+		
 	  protected JButton button;
 
 	  private String label;
+	  public String stockTicker;
+	  public double stockPrice;
 
 	  private boolean isPushed;
 
@@ -54,8 +58,10 @@ class ButtonRenderer extends JButton implements TableCellRenderer
 		@Override
 		public void actionPerformed(java.awt.event.ActionEvent arg0) {
 			// TODO Auto-generated method stub
+			
+			
 			BuyStockView buyView = new BuyStockView();
-			buyView.buyStock(view.getStockName(), view.getStockPrice());
+			buyView.buyStock(stockTicker, stockPrice);
 			fireEditingStopped();
 		}
 	    });

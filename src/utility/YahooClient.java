@@ -40,7 +40,7 @@ public class YahooClient {
 	
 	
 	
-	private double getNetGainFromYesterday(yahoofinance.Stock stock) throws IOException
+	public double getNetGainFromYesterday(yahoofinance.Stock stock) throws IOException
 	{
 //		HistoricalQuote quote = getPreviousQuote(stock, 1);
 		HistoricalQuote recent = getPreviousQuote(stock, 1);
@@ -53,7 +53,7 @@ public class YahooClient {
 	{
 		java.util.Calendar from = java.util.Calendar.getInstance();
 		java.util.Calendar to = java.util.Calendar.getInstance();
-		from.add(java.util.Calendar.DAY_OF_YEAR, -20); //this gets the last 20 days but we only need the last recorded day
+		from.add(java.util.Calendar.DAY_OF_YEAR, -5); //this gets the last 20 days but we only need the last recorded day
 														//I ran into the issue of the stock market not running on weekends:).
 														//they might close on holidays too, so the 20 days *should* cover it.
 		
