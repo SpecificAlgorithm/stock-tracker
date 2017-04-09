@@ -7,7 +7,10 @@ import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.math.BigDecimal;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -166,10 +169,25 @@ public class SearchStockView implements IView {
 		
 
 	    this.tModel.fireTableDataChanged();
-	    ButtonEditor be = new ButtonEditor(new JCheckBox());
-	    be.view = this;
-	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
-	    table.getColumn("Buy").setCellEditor(be);
+	      Action buyButtons = new AbstractAction()
+	      {
+	          public void actionPerformed(ActionEvent e)
+	          {
+	              JTable table = (JTable)e.getSource();
+	              int modelRow = Integer.valueOf( e.getActionCommand() );
+	              
+	              BuyStockView buyStock = new BuyStockView();
+//	              BigDecimal temp = (BigDecimal) table.getModel().getValueAt(modelRow, 2);
+	              
+	              buyStock.buyStock(table.getModel().getValueAt(modelRow, 1).toString(),  Double.parseDouble((String) table.getModel().getValueAt(modelRow, 2)));
+	          }
+	      };
+	       
+	      ButtonColumn buttonColumn = new ButtonColumn(table, buyButtons, 5);
+//	    ButtonEditor be = new ButtonEditor(new JCheckBox());
+//	    be.view = this;
+//	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
+//	    table.getColumn("Buy").setCellEditor(be);
 	}
 	
 	
