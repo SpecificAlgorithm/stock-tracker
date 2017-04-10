@@ -6,11 +6,12 @@ import model.User;
 import utility.YahooClient;
 import view.BuyStockView;
 import view.SearchStockView;
+import view.SetThresholdView;
 
 public class SearchStockController extends IController{
 	
 	String[] columns = {"Name", "Ticker", "Current Selling $",
-			"Net Gain Today", "Additional Information", "Buy"};
+			"Net Gain Today", "Additional Information", "Buy", "Set Threshold"};
 	
 	public void switchContext()
 	{
@@ -25,7 +26,7 @@ public class SearchStockController extends IController{
 	
 	public String[][] getData(String searchStr)
 	{
-		String[][] data = {{"", "", "", "", "", ""}};
+		String[][] data = {{"", "", "", "", "", "", ""}};
 		if(searchStr != null)
 		{
 			YahooClient client = new YahooClient();
@@ -51,6 +52,16 @@ public class SearchStockController extends IController{
 		HomeController hc = new HomeController();
 		hc.switchContext(user);
 	}
+
+	public void setThresh(User user, String ticker, double price) {
+        SetThresholdView setThresh = new SetThresholdView();
+        
+        setThresh.setThresh(user, ticker, price);
+		
+		
+	}
+
+	
 
 
 }

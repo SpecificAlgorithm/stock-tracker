@@ -42,6 +42,7 @@ public class SearchStockView implements IView {
 
 	private SearchStockController ssCont;
 	
+	
 	public String getStockName()
 	{
 		return (String) table.getModel().getValueAt(0, 1);
@@ -181,8 +182,22 @@ public class SearchStockView implements IView {
 	              BuyStockView buyStock = new BuyStockView();
 	          }
 	      };
-	       
+	      
+	      this.tModel.fireTableDataChanged();
+	      Action treshButtons = new AbstractAction()
+	      {
+	          public void actionPerformed(ActionEvent e)
+	          {
+	              JTable table = (JTable)e.getSource();
+	              int modelRow = Integer.valueOf( e.getActionCommand() );
+	              
+	              
+	              ssCont.setThresh(ssCont.user, table.getModel().getValueAt(modelRow, 1).toString(), Double.parseDouble((String) table.getModel().getValueAt(modelRow, 2)));
+	              SetThresholdView setThresh = new SetThresholdView();
+	          }
+	      }; 
 	      ButtonColumn buttonColumn = new ButtonColumn(table, buyButtons, 5);
+	      ButtonColumn buttonColumn1 = new ButtonColumn(table, treshButtons, 6);
 //	    ButtonEditor be = new ButtonEditor(new JCheckBox());
 //	    be.view = this;
 //	    table.getColumn("Buy").setCellRenderer(new ButtonRenderer());
