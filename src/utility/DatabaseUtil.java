@@ -365,7 +365,7 @@ public class DatabaseUtil {
 		if (result == null) {
 			return null;
 		}
-
+  
 		List<Stock> stocks = new ArrayList<Stock>();
 		try {
 			do {
