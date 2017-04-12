@@ -151,6 +151,8 @@ public class DatabaseUtil {
 		try {
 			PreparedStatement pst = connection.prepareStatement(query);
 			pst.setString(1, username);
+			
+		
 			pst.execute();
 			pst.close();
 			connection.close();
@@ -341,14 +343,18 @@ public class DatabaseUtil {
 	//FIXME TODO
 public static int getTransNum() {
 		
-	    String sql = "select * from OwnedStock where rowid = (SELECT max(rowid) FROM OwnedStock)";
+	String sql = "SELECT COUNT(*) AS total from OwnedStock";
+//	    String sql = "select * from OwnedStock where rowid = (SELECT max(rowid) FROM OwnedStock)";
 		Connection connection = dbconnection();
 		PreparedStatement pst;
 		try {
 			pst = connection.prepareStatement(sql);
 			
 			ResultSet result = pst.executeQuery();
-			return result.getInt("rowid");
+			int value = result.getInt("total");
+			pst.close();
+			connection.close();
+			return value;
 		} catch (SQLException e) {
 			// Auto-generated catch block
 			e.printStackTrace();
@@ -427,8 +433,12 @@ public static int getTransNum() {
 			pst = connection.prepareStatement(sql);
 			pst.setString(1, username);
 			pst.setString(2, stockname);
+			
 			ResultSet result = pst.executeQuery();
-			return result.getDouble("spent");
+			double value = result.getDouble("spent");
+			pst.close();
+			connection.close();
+			return value;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
