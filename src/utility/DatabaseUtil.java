@@ -9,15 +9,18 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import controller.LoginController;
 import controller.RegistrationController;
 import controller.StockDetailsController;
+import model.Stock;
 import model.User;
 import view.ActionEvent;
-import javax.swing.*;
 public class DatabaseUtil {
 
 	private static final String DB_NAME = "StockTracker.sqlite";
@@ -31,7 +34,6 @@ public class DatabaseUtil {
 	
 	public static void buyStock(User user, String stockName, int multiple, double price,JFrame frame)
 	{
-
 		String name = user.getUsername();
 		
 		double balance = getCurrentBalance(name);
@@ -337,18 +339,72 @@ public class DatabaseUtil {
 	 * @return
 	 */
 	
-	
-	//FIXME TODO
-public static int getTransNum() {
-		
-	    String sql = "select * from OwnedStock where rowid = (SELECT max(rowid) FROM OwnedStock)";
+	public static ResultSet getTransactions(String username) {
+		String sql = "SELECT * FROM OwnedStock WHERE username = ?";
 		Connection connection = dbconnection();
 		PreparedStatement pst;
 		try {
 			pst = connection.prepareStatement(sql);
-			
 			ResultSet result = pst.executeQuery();
-			return result.getInt("rowid");
+			return result;
+		} catch (SQLException e) {
+			// Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				// Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public List<Stock> extractTransaction(ResultSet result) {
+		if (result == null) {
+			return null;
+		}
+
+		List<Stock> stocks = new ArrayList<Stock>();
+		try {
+			do {
+				String ticker = result.getString("Ticker");
+				double spent = result.getDouble("spent");
+				Stock s = new Stock();
+				s.setStockCode(ticker);
+				s.setPrice(spent);
+				stocks.add(s);
+			} while (result.next());
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return stocks;
+	}
+
+	
+	
+public void createTransactionTable(List<Stock> stocks) {
+	for (Stock s : stocks) {
+		String ticker = s.getStockCode();
+		
+		
+	}
+}
+	
+	//FIXME TODO
+public static int getTransNum(String username) {
+		
+	    String sql = "select count(*) as numRow from OwnedStock";
+		Connection connection = dbconnection();
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			ResultSet result = pst.executeQuery();
+//			int rows = result.getFetchSize();
+			int row = result.getInt("numRow");
+			return row;
 		} catch (SQLException e) {
 			// Auto-generated catch block
 			e.printStackTrace();
