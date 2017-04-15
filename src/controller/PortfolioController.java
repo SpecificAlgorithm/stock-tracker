@@ -8,6 +8,8 @@ import java.sql.ResultSet;
 import java.util.List;
 import javax.swing.JOptionPane;
 import model.Stock;
+import model.User;
+import utility.DatabaseUtil;
 import view.PorfolioView;
 
 import java.awt.BorderLayout;
@@ -43,6 +45,29 @@ public class PortfolioController extends IController {
 		hc.switchContext(user);
 	}
 
+	
+	public Object[][] getData()
+	{
+		DatabaseUtil util = new DatabaseUtil();
+		String[] stocks = util.getAllStockNamesForUser(user);
+		Object[][] data = new Object[stocks.length][];
+		for(int i = 0; i < stocks.length; i++)
+		{
+			double spent = util.getSpentOnStock(user, stocks[i]);
+			int numBought = util.getCountOfStockForUser(user, stocks[i]);
+			Object[] row = {stocks[i], numBought, spent, stocks[i], ""};
+			data[i] = row;
+		}
+		return data;
+		
+	}
+	public Object[] getColumns()
+	{
+		Object[] columns = {"Stock", "# owned", "$ Spent", "Sell", "History View"};
+		return columns;
+	}
+	
+	public User getUser() {return user;}
 	
 
 }

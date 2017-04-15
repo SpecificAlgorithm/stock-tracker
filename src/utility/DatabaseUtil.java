@@ -8,9 +8,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -38,7 +42,7 @@ public class DatabaseUtil {
 		
 		double balance = getCurrentBalance(name);
 		Connection connection = dbconnection();
-		double spent = getSpent(name,stockName);
+		double spent = getSpentOnStock(user,stockName);
 		
 				try {
 					if(multiple*price < balance){
@@ -52,7 +56,7 @@ public class DatabaseUtil {
 					pst.setInt(3, multiple);
 					spent = price * multiple;
 					pst.setDouble(4, spent);
-					pst.setInt(5, (int) Instant.now().toEpochMilli());
+					pst.setInt(5, (int) Instant.now().getEpochSecond());
 					pst.execute();
 					pst.close();
 					balance = balance - spent;      // update balancess
@@ -196,6 +200,46 @@ public class DatabaseUtil {
 	public byte[] getRememberedPassword(String username) {
 		return null;
 	}
+	
+	public Object[][] getEntriesFor(User user, String ticker)
+	{
+		ArrayList<Object[]> data = null;
+		Connection connection = dbconnection();
+		String sql = "Select * FROM OwnedStock WHERE username = ? AND Ticker = ?";
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			ResultSet rs = pst.executeQuery();
+			data = new ArrayList<>();
+			while(rs.next())
+			{
+				ArrayList<Object> arr = new ArrayList<>();
+				int numberOwned = rs.getInt("numberOwned");
+				double spent = rs.getDouble("spent");
+				int date = rs.getInt("date");
+				long RealDate = (long) date * 1000L;
+				DateFormat format = new SimpleDateFormat("yyyy-MM-dd::HH:mm:ss");
+				  format.setTimeZone(TimeZone.getTimeZone("CST"));
+				  String formatted = format.format(RealDate);
+				arr.add(ticker);
+				arr.add(numberOwned);
+				arr.add(spent);
+				arr.add(formatted);
+				data.add(arr.toArray());
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Object[][] returnData = new Object[data.size()][];
+		for(int i = 0; i < data.size(); i++)
+		{
+			returnData[i] = data.get(i);
+		}
+		return returnData;
+	}
 
 	public static boolean canLogOn(ActionEvent event) throws SQLException {
 		Connection connection = dbconnection();
@@ -289,9 +333,9 @@ public class DatabaseUtil {
 		try {
 			pst = connection.prepareStatement(sql);
 			pst.setDouble(1, OwnedStocks);
-			pst.setDouble(1, spent);
-			pst.setString(2, username);
-			pst.setString(2, stockname);
+			pst.setDouble(2, spent);
+			pst.setString(3, username);
+			pst.setString(4, stockname);
 			pst.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -332,6 +376,73 @@ public class DatabaseUtil {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static boolean SellStock(User user, String ticker, double CurrentSellingPrice)
+	{
+		Connection connection = dbconnection();
+		int oldestTime = 0;
+		
+		//first get the oldest time from the database
+		String lowSQL = "SELECT MIN(date) AS date FROM OwnedStock WHERE username = ? AND Ticker = ?";
+		PreparedStatement oldPST;
+		
+		try {
+			oldPST = connection.prepareStatement(lowSQL);
+			oldPST.setString(1, user.getUsername());
+			oldPST.setString(2, ticker);
+			ResultSet rs = oldPST.executeQuery();
+			oldestTime = rs.getInt("date");
+			oldPST.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		//then decremement the number of oldest stock from the oldest time
+		String sql = "UPDATE OwnedStock SET numberOwned = numberOwned - 1 WHERE username = ? AND Ticker = ? AND date = ?";
+		
+		PreparedStatement pst;
+		
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			pst.setInt(3, oldestTime);
+			pst.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+//		YahooClient yClient = new YahooClient();
+//		double balanceAdd = yClient.getCurrentSellingPrice(ticker); too slow to do it this way
+		String balanceSQL = "UPDATE Users SET Balance = Balance + ?";
+		try {
+			PreparedStatement balancePST = connection.prepareStatement(balanceSQL);
+			balancePST.setDouble(1, CurrentSellingPrice);
+			balancePST.execute();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
+		
+		
+		//delete any stocks that we own 0 of.
+		String delSQL = "DELETE FROM OwnedStock WHERE numberOwned = 0";
+		PreparedStatement delPst;
+		
+		try {
+			delPst = connection.prepareStatement(delSQL);
+			delPst.execute();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	/**
@@ -391,6 +502,86 @@ public void createTransactionTable(List<Stock> stocks) {
 		
 		
 	}
+}
+
+public static double getSpentOnStock(User user, String ticker)
+{
+	Connection connection = dbconnection();
+	int count = 0;
+	String sql = "SELECT numberOwned, spent FROM OwnedStock WHERE Username = ? AND Ticker = ?";
+	PreparedStatement pst;
+	try {
+		pst = connection.prepareStatement(sql);
+		pst.setString(1, user.getUsername());
+		pst.setString(2, ticker);
+		ResultSet rs = pst.executeQuery();
+		while(rs.next())
+		{
+			count += rs.getDouble("spent");
+		}
+		
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	System.out.println(count);
+	return count;
+}
+
+public static int getCountOfStockForUser(User user, String ticker)
+{
+	Connection connection = dbconnection();
+	int count = 0;
+	String sql = "SELECT numberOwned FROM OwnedStock WHERE Username = ? AND Ticker = ?";
+	PreparedStatement pst;
+	try {
+		pst = connection.prepareStatement(sql);
+		pst.setString(1, user.getUsername());
+		pst.setString(2, ticker);
+		ResultSet rs = pst.executeQuery();
+		while(rs.next())
+		{
+			count = count +  rs.getInt("numberOwned");
+		}
+		
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return count;
+}
+
+public static String[] getAllStockNamesForUser(User user)
+{
+	Connection connection = dbconnection();
+	ArrayList<String> arr = new ArrayList<>();
+	String sql = "SELECT Ticker FROM OwnedStock WHERE Username = ?";
+	PreparedStatement pst;
+	try {
+		pst = connection.prepareStatement(sql);
+		pst.setString(1, user.getUsername());
+		ResultSet rs = pst.executeQuery();
+
+		while(rs.next())
+		{
+			if(!arr.contains(rs.getString("Ticker")))
+			arr.add(rs.getString("Ticker"));
+		}
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return convertObjectArrToStringArr(arr.toArray());
+}
+
+static private String[] convertObjectArrToStringArr(Object[] oArr)
+{
+	String[] sArr = new String[oArr.length];
+	for(int i = 0; i < oArr.length; i++)
+	{
+		sArr[i] = (String) oArr[i];
+	}
+	return sArr;
 }
 	
 	//FIXME TODO
@@ -475,29 +666,7 @@ public static int getTransNum(String username) {
 		}
 	}
 	
-	public static double getSpent(String username,String stockname) {
-		String sql = "SELECT spent from OwnedStock WHERE username = ? AND Ticker = ?";
-		Connection connection = dbconnection();
-		PreparedStatement pst;
-		try {
-			pst = connection.prepareStatement(sql);
-			pst.setString(1, username);
-			pst.setString(2, stockname);
-			ResultSet result = pst.executeQuery();
-			return result.getDouble("spent");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return -1;
-		} finally {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+
 
 	public final StockDetailsController getStockDetailsController() {
 		return this.stockDetailsController;

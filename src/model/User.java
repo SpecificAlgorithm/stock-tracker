@@ -22,6 +22,12 @@ public class User   implements IModel {
 		private Account account; 
 	 
 		private List<UserStock> userStocks; 
+		
+		public User(String name)
+		{
+			this.username = name;
+		}
+		public User(){}
 	 
 		public final int getId() {
 			return this.id;

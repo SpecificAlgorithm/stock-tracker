@@ -17,6 +17,8 @@
 	import javax.swing.JTextPane;
 
 import controller.LoginController;
+import model.User;
+import utility.DatabaseUtil;
 
 import javax.swing.ImageIcon;
 	import javax.swing.JButton;

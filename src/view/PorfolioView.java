@@ -5,15 +5,19 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import controller.HistoryController;
 import controller.HomeController;
 import controller.IController;
 import controller.PortfolioController;
 import controller.SearchStockController;
 import model.Stock;
+import model.User;
 import utility.CommonUtil;
 import utility.YahooClient;
 
@@ -67,6 +71,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -91,31 +96,31 @@ public class PorfolioView implements IView {
 	
 	// sellStock function Variables
 //	private JFrame frame = new JFrame();
-	private JPanel contentPane = new JPanel();
-	private JTextField NumOFStocks = new JTextField();
-	private JButton btnSell = new JButton();
-	private JButton btnCancel = new JButton();
-	private JTextField Company = new JTextField();
-	private JTextField Price = new JTextField();
-	JButton btnSell11 = new JButton();
-	JButton btnCancel11 = new JButton();
-	JLabel lblIfYouAre = new JLabel();
+	private JPanel contentPane;
+	private JTextField NumOFStocks;
+	private JButton btnSell;
+	private JButton btnCancel;
+	private JTextField Company;
+	private JTextField Price;
+	JButton btnSell11;
+	JButton btnCancel11;
+	JLabel lblIfYouAre;
 //	JRadioButton rdbtnMultiple1;
-	JLabel lblNumOfStocks = new JLabel();
+	JLabel lblNumOfStocks;
 	//
 	//
 	
     //buyStock function Variables
-	private JPanel contentPane1 = new JPanel();
-	private JTextField NumOFStocks1 = new JTextField();
-	private JTextField Company1 = new JTextField();
-	private JTextField Price1 = new JTextField();
-	JRadioButton rdbtnMultiple = new JRadioButton();
-	JButton btnSell1 = new JButton();
-	JButton btnCancel1 = new JButton();
-	JLabel lblIfYouAre1 = new JLabel();
-	JRadioButton rdbtnMultiple1 = new JRadioButton();
-	JLabel lblNumOfStocks1 = new JLabel();
+	private JPanel contentPane1;
+	private JTextField NumOFStocks1;
+	private JTextField Company1;
+	private JTextField Price1;
+	JRadioButton rdbtnMultiple;
+	JButton btnSell1;
+	JButton btnCancel1;
+	JLabel lblIfYouAre1;
+	JRadioButton rdbtnMultiple1;
+	JLabel lblNumOfStocks1;
 	
 	
 	
@@ -124,20 +129,19 @@ public class PorfolioView implements IView {
 	private static final long serialVersionUID = 1L;  
     protected static final boolean DEBUG = false;
     private JTable table;
-    YahooClient client = new YahooClient();
+    YahooClient client;
     TableModel model;
-    JPanel panel = new JPanel(new BorderLayout());
-    JButton button = new JButton("Sell");
-    JTextField searchTextField = new JTextField(15);
-    JButton searchBtn = new JButton("Search");
-    JPanel flowLayoutPanel = new JPanel(new FlowLayout());
+    JPanel panel;
+    JButton button;
+    JTextField searchTextField;
+    JButton searchBtn;
+    JPanel flowLayoutPanel;
     TableRowSorter<TableModel> sorter;
-    int i = 100000;
-    int cost = 5000;
+    int i;
+    int cost;
     
     // Back button takes the user to the HomeView
-    JButton backBtn = new JButton("Go Back");
-    
+    JButton backBtn;
     
     
   
@@ -148,95 +152,138 @@ public class PorfolioView implements IView {
 	//PorfolioController controller;
 	
 	public PorfolioView() {
-    	JTextArea area1 = new JTextArea(1,1);
-        area1.setText("Funds:");
-        area1.setEditable(false); 
-    	JTextArea area = new JTextArea(1,1);
-        area.setText(String.valueOf(i));
-        area.setEditable(false); 
-    	yahoofinance.Stock stock = null;
-		try {
-			stock = YahooFinance.get("GOOG");
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		yahoofinance.Stock stock1 = null;
-		try {
-			stock1 = YahooFinance.get("ABB");
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-        String[] columnNames = { "Stock", "Amount ", "Sell"};
-        Object[][] data =  {{stock.getName(),(cost+1000)},{stock1.getName(),(cost + 2000)}};
-        model = new DefaultTableModel(data, columnNames) {
-            @Override
-            public Class getColumnClass(int column) {
+		this.initalize();
+	}
+	
+	public void refreash()
+	{
+		this.initalize();
+	}
+	
+	public void initalize() {
+		contentPane = new JPanel();
+		NumOFStocks = new JTextField();
+		btnSell = new JButton();
+		btnCancel = new JButton();
+		Company = new JTextField();
+		Price = new JTextField();
+		btnSell11 = new JButton();
+		btnCancel11 = new JButton();
+		lblIfYouAre = new JLabel();
+//		JRadioButton rdbtnMultiple1;
+		lblNumOfStocks = new JLabel();
+		//
+		//
+		
+	    //buyStock function Variables
+		contentPane1 = new JPanel();
+		NumOFStocks1 = new JTextField();
+		Company1 = new JTextField();
+		Price1 = new JTextField();
+		rdbtnMultiple = new JRadioButton();
+		btnSell1 = new JButton();
+		btnCancel1 = new JButton();
+		lblIfYouAre1 = new JLabel();
+		rdbtnMultiple1 = new JRadioButton();
+		lblNumOfStocks1 = new JLabel();
+		
 
-                switch(column) {
-                case 0: 
-                case 1: return String.class;
-                case 2: return Boolean.class;
-                default: return Object.class;
+//	    private JTable table;
+	    client = new YahooClient();
+	    
+	    panel = new JPanel(new BorderLayout());
+	    button = new JButton("Sell");
+	    searchTextField = new JTextField(15);
+	    searchBtn = new JButton("Search");
+	    flowLayoutPanel = new JPanel(new FlowLayout());
+//	    wSorter<TableModel> sorter;
+	    i = 100000;
+	    cost = 5000;
+	    
+	    // Back button takes the user to the HomeView
+	    JButton backBtn = new JButton("Go Back");
+		
+		this.pcCont = new PortfolioController();
 
-                }
-            }
-        };
+        Object[] columnNames = this.pcCont.getColumns();
+        Object[][] data =  this.pcCont.getData();
 
-        table = new JTable(model) {
-            public boolean isCellEditable(int row, int col) {
-            	 if (col < 2) {
-     	            return false;
-     	        } else {
-     	            return true;
-     	        }
-            }
-        };
+        table = new JTable(data, columnNames);
 
-        sorter = new TableRowSorter<TableModel>(model);
-        table.setPreferredScrollableViewportSize(table.getPreferredSize());
-        table.setRowSorter(sorter);
+//        sorter = new TableRowSorter<TableModel>(model);
+//        table.setPreferredScrollableViewportSize(table.getPreferredSize());
+//        table.setRowSorter(sorter);
         table.setGridColor(Color.black);
         JScrollPane scrollPane = new JScrollPane(table);
         
-        button.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent e) {
-            	String label = "Message";
-                for(int row = 0; row < table.getRowCount(); ++row) {
-                    if((Boolean) table.getValueAt(row, 2) == true) {
-                    	int j = (Integer) table.getValueAt(row, 1);
-                    	i = i + j;
-                    	area.setText(String.valueOf(i));
-                        ((DefaultTableModel) model).removeRow(table.convertRowIndexToModel(row));
-                        JOptionPane.showMessageDialog(button, label + ": Stock Sold!");
-                        row--;
-                    }
-                }
-            }
-        });
+//        button.addActionListener(new ActionListener(){
+//            public void actionPerformed(ActionEvent e) {
+//            	String label = "Message";
+//                for(int row = 0; row < table.getRowCount(); ++row) {
+//                    if((Boolean) table.getValueAt(row, 2) == true) {
+//                    	int j = (Integer) table.getValueAt(row, 1);
+//                    	i = i + j;
+////                    	area.setText(String.valueOf(i));
+//                        ((DefaultTableModel) model).removeRow(table.convertRowIndexToModel(row));
+//                        JOptionPane.showMessageDialog(button, label + ": Stock Sold!");
+//                        row--;
+//                    }
+//                }
+//            }
+//        });
 
-        searchBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String text = searchTextField.getText();
-                if (text.length() == 0) {
-                    sorter.setRowFilter(null);
-                } else {
-                    sorter.setRowFilter(RowFilter.regexFilter(text));
-                }
+//        searchBtn.addActionListener(new ActionListener() {
+//            public void actionPerformed(ActionEvent e) {
+//                String text = searchTextField.getText();
+//                if (text.length() == 0) {
+//                    sorter.setRowFilter(null);
+//                } else {
+//                    sorter.setRowFilter(RowFilter.regexFilter(text));
+//                }
+//            }
+//        });
+        PorfolioView view = this;
+        Action sellButtons = new AbstractAction()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                JTable table = (JTable)e.getSource();
+                int modelRow = Integer.valueOf( e.getActionCommand() );
+                
+                SellStockView sellStock = new SellStockView(pcCont.user.getUsername(), view);
+               
+                sellStock.initialize((String) table.getModel().getValueAt(modelRow, 0));
             }
-        });
+        };
+         
+        ButtonColumn buttonColumn = new ButtonColumn(table, sellButtons, 3);
+        
+        Action historyView = new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JTable table = (JTable)e.getSource();
+                int modelRow = Integer.valueOf( e.getActionCommand() );
+                
+                String ticker = (String) table.getModel().getValueAt(modelRow, 0);
+                
+				HistoryController hcCont = new HistoryController(pcCont.getUser(), ticker);
+//				hcCont.switchContext(ticker);
+			}
+		};
+		
+		ButtonColumn hisCol = new ButtonColumn(table, historyView, 4);
         
         
         
         
         
-        JButton backBtn = new JButton();
+        backBtn = new JButton();
 		backBtn.setText("go back");
 		
 		backBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	JOptionPane.showMessageDialog(backBtn, "Back button pressed...");
+//            	JOptionPane.showMessageDialog(backBtn, "Back button pressed...");
             	//frame.setVisible(false);
             	pcCont = new PortfolioController();
             	pcCont.goBackToHome();
@@ -248,24 +295,21 @@ public class PorfolioView implements IView {
         
         
         
-        flowLayoutPanel.add(area1);
-        flowLayoutPanel.add(area);
-        flowLayoutPanel.add(searchTextField);
-        flowLayoutPanel.add(searchBtn);
+//        flowLayoutPanel.add(area1);
+//        flowLayoutPanel.add(area);
+//        flowLayoutPanel.add(searchTextField);
+//        flowLayoutPanel.add(searchBtn);
         
         // Added back button here. 
         flowLayoutPanel.add(backBtn);
         
         panel.add(flowLayoutPanel,BorderLayout.NORTH);
         panel.add(scrollPane , BorderLayout.CENTER);
-        panel.add(button, BorderLayout.PAGE_END);
+//        panel.add(button, BorderLayout.PAGE_END);
         frame.getContentPane().removeAll();
         frame.getContentPane().add(panel);
         frame.pack();
         frame.setVisible(true);
-	}
-	
-	public void initalize() {
 		
 		rdbtnMultiple1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

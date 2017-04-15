@@ -29,6 +29,17 @@ public class YahooClient {
 		
 		return data;
 	}
+	public double getCurrentSellingPrice(String ticker)
+	{
+		yahoofinance.Stock stock = getCurrentStockInfo(ticker);
+		try {
+			return stock.getQuote(true).getPrice().doubleValue();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return (Double) null;
+	}
 	
 	public String getURL(String stockName)
 	{

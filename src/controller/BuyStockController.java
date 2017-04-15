@@ -11,7 +11,9 @@ public class BuyStockController {
 	
 	public boolean buyStock(User user, String ticker,  int numberToBuy, double price, JFrame frame)
 	{
+		
 		utility.DatabaseUtil databaseUtil = new utility.DatabaseUtil();
+		System.out.println(databaseUtil.getTransNum(user.getUsername()));
 		if(!databaseUtil.canFundsDedect(user, 10)) return false;
 		databaseUtil.buyStock(user, ticker, numberToBuy, price,frame);
 		return true;

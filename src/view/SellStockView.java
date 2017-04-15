@@ -28,8 +28,10 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import controller.IController;
+import model.User;
 import utility.CommonUtil;
 import utility.DatabaseUtil;
+import utility.YahooClient;
 
 public class SellStockView implements IView {
 
@@ -38,13 +40,24 @@ public class SellStockView implements IView {
 	private JFrame frame;
 	private JTextField NumTextField;
 	Connection connection = null;   
-	
+	String name;
 	DatabaseUtil database = new DatabaseUtil();
-	String name = "user";
-    double balance = database.getCurrentBalance(name);
-    double num = database.getnumberOwned(name);
+    double balance;
+    User user;
+    int num;
     double getspent = 0.0;
-	private void initialize(String stockName, double price) {
+    PorfolioView view;
+    
+    public SellStockView(String username, PorfolioView pView)
+    {
+    	this.view = pView;
+    	name = username;
+    	user = new User(username);
+    	balance = database.getCurrentBalance(name);
+    	num = database.getCountOfStockForUser(user, name);
+    	
+    }
+	public void initialize(String stockName) {
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 699, 274);
@@ -84,6 +97,7 @@ public class SellStockView implements IView {
 		rdbtnMultiple.setFont(new Font("Tahoma", Font.PLAIN, 33));
 		rdbtnMultiple.setBounds(32, 73, 151, 47);
 		frame.getContentPane().add(rdbtnMultiple);
+		frame.setVisible(true);
 	
 	
 	
@@ -119,8 +133,12 @@ public class SellStockView implements IView {
 		////////////////////////////////////////////////////////////
 		
 		
+		
 		btnSell.addActionListener(new ActionListener() {
+		
 			public void actionPerformed(ActionEvent e) {
+				YahooClient yClient = new YahooClient();
+				double price = yClient.getCurrentSellingPrice(stockName);
 				Connection connection = dbconnection();            //  currentBalance    and      numOwned   from DB
 				PreparedStatement pst;
 				int multiple  = 1;
@@ -132,46 +150,48 @@ public class SellStockView implements IView {
 					utility.CommonUtil temp = new utility.CommonUtil();	
 					checked = temp.regexChecker(Num_Pat, Input);
 				}
+				num = database.getCountOfStockForUser(user, stockName);
+				
 				if (checked || multiple == 1 ) {                                          // check if either the multiple number is valid or multipe is unpressed
 
-						
-						getspent = database.getSpent(name, stockName);                       // uses DB FUNCs
+						User user = new User(name);
+						getspent = database.getSpentOnStock(user, stockName);                       // uses DB FUNCs
 					//    selection ends
 					if(multiple <= num){                                              //case when user have enough stocks
 						//finish the transaction
 						// SELLING IS PROCESSING
-					
-					    if(num > 1){                                                     //case when user have more than one stock
-						try {
-							balance = balance + (multiple*price);
-							database.updateBalance(name, balance);
-							
-						    num = num - multiple;
-						    getspent = getspent - (multiple*price);
-						    database.updateSpent_Owned(name, stockName, getspent, num);
-							
-							frame.setVisible(false);
-							
-						} catch (Exception e1) {
-							JOptionPane.showMessageDialog(null, "Cant insert new data to the database in the many option !!!");
+//						YahooClient yClient = new YahooClient();
+						double sellingPrice = yClient.getCurrentSellingPrice(stockName);
+						for(int i = 0; i < multiple; i++)
+						{
+							database.SellStock(user, stockName, sellingPrice);
 						}
-					    }else if(num == 1)	{                                //case when user have just than one stock
-					    	try{	
-					    		balance = balance + (multiple*price);
-    							String query = "DELETE FROM OwnedStock WHERE Ticker = ? AND numberOwned = ?";                // first check if subtract
-    						    pst = connection.prepareStatement(query);
-    						    pst.setString(1, stockName);
-    						    pst.setDouble(2, num); 
-    						    database.updateBalance(name, balance);
-    						    pst.execute();
-    						    pst.close();
-    						    
-    					    	}catch(Exception e1){  
-    				                   JOptionPane.showMessageDialog(null," Cant delete the one stock!!!");   
-    			                          }
-					    }else{
-					    	  JOptionPane.showMessageDialog(null," Major ERROR GO GET REFUND!!!");   
-					    }
+						view.refreash();
+//					    if(num > 1){                                                     //case when user have more than one stock
+//						try {
+//							balance = balance + (multiple*price);
+//							database.updateBalance(name, balance);
+//							
+//						    num = num - multiple;
+//						    getspent = getspent - (multiple*price);
+//						    database.updateSpent_Owned(name, stockName, getspent, num);
+//							
+//							frame.setVisible(false);
+//							
+//						} catch (Exception e1) {
+//							JOptionPane.showMessageDialog(null, "Cant insert new data to the database in the many option !!!");
+//						}
+//					    }else if(num == 1)	{                                //case when user have just than one stock
+//					    	try{	
+//					    		balance = balance + (multiple*price);
+//    							database.SellStock(user, stockName);
+//    						    
+//    					    	}catch(Exception e1){  
+//    				                   JOptionPane.showMessageDialog(null," Cant delete the one stock!!!");   
+//    			                          }
+//					    }else{
+//					    	  JOptionPane.showMessageDialog(null," Major ERROR GO GET REFUND!!!");   
+//					    }
 					    
 					}else if (multiple > num){
 					       JOptionPane.showMessageDialog(null," Sorry, you do not own that many!!!"); 
@@ -182,8 +202,9 @@ public class SellStockView implements IView {
 					}else{
 						JOptionPane.showMessageDialog(null," Please, Input a number 1 to 99!!!"); 
 					}
-					
+				frame.dispose();	
 			}
+			
 		});
 	
 	}
