@@ -19,6 +19,8 @@ import java.util.TimeZone;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import com.sun.xml.internal.ws.api.policy.AlternativeSelector;
+
 import controller.LoginController;
 import controller.RegistrationController;
 import controller.StockDetailsController;
@@ -35,6 +37,124 @@ public class DatabaseUtil {
 
 	private LoginController loginController;
 	
+	
+	public static String[] getAlertMessages(User user, String ticker)
+	{
+		ArrayList<String> arr = new ArrayList<>();
+		YahooClient yClient = new YahooClient();
+		Connection connection = dbconnection();
+		//------------------------------------------------------------------------------------------------------------------------
+		String sql = "SELECT * FROM Alerts WHERE username = ? AND ticker = ? AND type = ? AND  value > startingValue AND ? > value"; //this gets high threasholds.  that is threasholds that were set above the selling price
+		//also this statement is only meant for public stock
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			pst.setString(3, "public");
+			pst.setDouble(4, yClient.getCurrentSellingPrice(ticker));
+			ResultSet rs = pst.executeQuery();
+			while(rs.next())
+			{
+				arr.add("Ticker \"" + rs.getString("ticker") + "\" has triggered the alert set for: " + rs.getDouble("value") + " This is a gain");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//-----------------------------------------------------------------------------------------------------------------------------
+		//this sql statement will get stocks with threasholds set lower than original.  This is also only meant for public stock.
+		sql = "SELECT * FROM Alerts WHERE username = ? AND ticker = ? AND type = ? AND value < startingValue AND ? < value";
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			pst.setString(3, "public");
+			pst.setDouble(4, yClient.getCurrentSellingPrice(ticker));
+			ResultSet rs = pst.executeQuery();
+			while(rs.next())
+			{
+				arr.add("Ticker \"" + rs.getString("ticker") + "\" has triggered the alert set for: " + rs.getDouble("value") + " This is a loss");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//-------------------------------------------------------------------------------------------------------------------------
+		
+		double numberOfStockOwned = getCountOfStockForUser(user, ticker);
+		double price = yClient.getCurrentSellingPrice(ticker);
+		double CurrentOwnedValue = price * numberOfStockOwned;
+		sql = "SELECT * FROM Alerts WHERE username = ? AND ticker = ? AND type = ? AND tracking = ? AND value > startingValue AND ? > value";
+		
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			pst.setString(3, "private");
+			pst.setString(4, "value");
+			pst.setDouble(5, CurrentOwnedValue);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next())
+			{
+				arr.add("Ticker \"" + rs.getString("ticker") + "\" has triggered the alert set for: " + rs.getDouble("value") + " This is a gain in private stock!");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//-----------------------------------------------------------------------------------------------------------------------------
+		sql = "SELECT * FROM Alerts WHERE username = ? AND ticker = ? AND type = ? AND tracking = ? AND value < startingValue AND ? < value";
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			pst.setString(3, "private");
+			pst.setString(4, "value");
+			pst.setDouble(5, CurrentOwnedValue);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next())
+			{
+				arr.add("Ticker \"" + rs.getString("ticker") + "\" has triggered the alert set for: " + rs.getDouble("value") + " This is a loss in your private stock!");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//-------------------------------------------------------------------------------------------------------------------------
+		
+		sql = "SELECT * FROM Alerts WHERE username = ? AND ticker = ? AND type = ? AND tracking = ? AND ? > startingValue";
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			pst.setString(3, "private");
+			pst.setString(4, "profit");
+			pst.setDouble(5, CurrentOwnedValue);
+			ResultSet rs = pst.executeQuery();
+			while(rs.next())
+			{
+				arr.add("Ticker \"" + rs.getString("ticker") + "\" has triggered the alert set for: " + rs.getDouble("value") + " This stock has become profitable!");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		String[] returnArr = new String[arr.size()];
+		for(int i = 0; i < arr.size(); i++)
+		{
+			returnArr[i] = arr.get(i);
+		}
+		return returnArr;
+	}
 	
 	public static void buyStock(User user, String stockName, int multiple, double price,JFrame frame)
 	{
@@ -445,6 +565,57 @@ public class DatabaseUtil {
 		return false;
 	}
 	
+	
+	
+	public boolean doesAlertAlreadyExist(User user, String ticker, String alertType, String tracking)
+	{
+		Connection connection = dbconnection();
+		String sql = "SELECT * FROM Alerts WHERE username = ? AND ticker = ? AND type = ? AND tracking = ?";
+		
+		try {
+			PreparedStatement pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			pst.setString(3, alertType);
+			pst.setString(4, tracking);
+			ResultSet rs = pst.executeQuery();
+			boolean returnValue = rs.next();
+			pst.close();
+			connection.close();
+			return returnValue;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	public boolean saveAlert(User user, String ticker, String publicORprivate, String alertType, double value, double startingValue)
+	{
+		if(doesAlertAlreadyExist(user, ticker, publicORprivate, alertType)) return false;
+		
+		Connection connection = dbconnection();
+		String sql = "INSERT INTO Alerts (username, ticker, type, tracking, value, startingValue) VALUES (?,?,?,?,?,?)";
+		PreparedStatement pst;
+		try {
+			pst = connection.prepareStatement(sql);
+			pst.setString(1, user.getUsername());
+			pst.setString(2, ticker);
+			pst.setString(3, publicORprivate);
+			pst.setString(4, alertType);
+			pst.setDouble(5, value);
+			pst.setDouble(6, startingValue);
+			
+			pst.execute();
+			pst.close();
+			connection.close();
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
 	/**
 	 * Get the ticker symbol of user
 	 * @return
@@ -566,6 +737,27 @@ public static String[] getAllStockNamesForUser(User user)
 		{
 			if(!arr.contains(rs.getString("Ticker")))
 			arr.add(rs.getString("Ticker"));
+		}
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return convertObjectArrToStringArr(arr.toArray());
+}
+
+public static String[] getAllStockNamesForAlertUser(User user)
+{
+	Connection connection = dbconnection();
+	ArrayList<String> arr = new ArrayList<>();
+	String sql = "SELECT ticker FROM Alerts";
+	PreparedStatement pst;
+	
+	try {
+		pst = connection.prepareStatement(sql);
+		ResultSet rs = pst.executeQuery();
+		while(rs.next())
+		{
+			arr.add(rs.getString("ticker"));
 		}
 	} catch (SQLException e) {
 		// TODO Auto-generated catch block

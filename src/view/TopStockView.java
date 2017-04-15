@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
+import controller.AlertSettingsController;
 import controller.HomeController;
 import controller.IController;
 import controller.TopStockController;
@@ -81,7 +82,8 @@ public class TopStockView implements IView {
                               "Price ",
                               "Net Gain",
                               "Chart/Link",
-                              "Buy"};
+                              "Buy",
+                              "Alert"};
       
       // How to sort a column 
       final JTable table = new JTable(data, columnNames);
@@ -102,6 +104,24 @@ public class TopStockView implements IView {
       };
        
       ButtonColumn buttonColumn = new ButtonColumn(table, buyButtons, 5);
+      
+      
+      Action alertButtons = new AbstractAction()
+      {
+          public void actionPerformed(ActionEvent e)
+          {
+              JTable table = (JTable)e.getSource();
+              int modelRow = Integer.valueOf( e.getActionCommand() );
+              
+              AlertSettingsController asCont = new AlertSettingsController();
+              asCont.switchContext(false, (String) table.getValueAt(modelRow, 1));
+//              BigDecimal temp = (BigDecimal) table.getModel().getValueAt(modelRow, 2);
+              
+//              buyStock.buyStock(tsCont.user, table.getModel().getValueAt(modelRow, 1).toString(), temp.doubleValue());
+          }
+      };
+       
+      ButtonColumn alertColumn = new ButtonColumn(table, alertButtons, 6);
 
 
       if (DEBUG) {

@@ -11,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import controller.AlertSettingsController;
 import controller.HistoryController;
 import controller.HomeController;
 import controller.IController;
@@ -273,6 +274,25 @@ public class PorfolioView implements IView {
 		};
 		
 		ButtonColumn hisCol = new ButtonColumn(table, historyView, 4);
+		
+		
+        Action alertAction = new AbstractAction() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JTable table = (JTable)e.getSource();
+                int modelRow = Integer.valueOf( e.getActionCommand() );
+                
+                String ticker = (String) table.getModel().getValueAt(modelRow, 0);
+                
+                AlertSettingsController asCont = new AlertSettingsController();
+                asCont.switchContext(true, ticker);
+//				HistoryController hcCont = new HistoryController(pcCont.getUser(), ticker);
+//				hcCont.switchContext(ticker);
+			}
+		};
+		
+		ButtonColumn alertButtons = new ButtonColumn(table, alertAction, 5);
         
         
         

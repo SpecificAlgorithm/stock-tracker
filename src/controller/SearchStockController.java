@@ -54,9 +54,8 @@ public class SearchStockController extends IController{
 	}
 
 	public void setThresh(User user, String ticker, double price) {
-        SetThresholdView setThresh = new SetThresholdView();
-        
-        setThresh.setThresh(user, ticker, price);
+        AlertSettingsController asCont = new AlertSettingsController();
+        asCont.switchContext(false, ticker);
 		
 		
 	}

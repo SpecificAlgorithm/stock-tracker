@@ -55,7 +55,7 @@ public class PortfolioController extends IController {
 		{
 			double spent = util.getSpentOnStock(user, stocks[i]);
 			int numBought = util.getCountOfStockForUser(user, stocks[i]);
-			Object[] row = {stocks[i], numBought, spent, stocks[i], ""};
+			Object[] row = {stocks[i], numBought, spent, stocks[i], "", ""};
 			data[i] = row;
 		}
 		return data;
@@ -63,7 +63,7 @@ public class PortfolioController extends IController {
 	}
 	public Object[] getColumns()
 	{
-		Object[] columns = {"Stock", "# owned", "$ Spent", "Sell", "History View"};
+		Object[] columns = {"Stock", "# owned", "$ Spent", "Sell", "History View", "Alert"};
 		return columns;
 	}
 	

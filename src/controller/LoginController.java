@@ -24,12 +24,14 @@ public class LoginController  extends IController {
 			 boolean logOn = DatabaseUtil.canLogOn(event);
 			 if(logOn)
 			 {
+				 User user = new User();
+				 user.setUsername(event.username);
+				 BackgroundService bgserv = new BackgroundService(user);
 				 if(shouldRemember)
 				 {
 					 DatabaseUtil.setRememberedUsername(event.username);
 				 }
 				 HomeController hCont = new HomeController();
-				 User user = new User();
 				 user.setUsername(event.username);
 				 hCont.switchContext(user);
 			 }
@@ -63,6 +65,9 @@ public class LoginController  extends IController {
 		 {
 			 ActionEvent event = new ActionEvent();
 			 event.username = databaseUtil.getRememberedUsername();
+			 User user = new User();
+			 user.setUsername(event.username);
+			 BackgroundService bgserv = new BackgroundService(user);
 			 this.login(event, true, false);
 		 }
 		 
