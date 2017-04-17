@@ -2,6 +2,7 @@ package utility;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -54,24 +55,39 @@ public class YahooClient {
 	public double getNetGainFromYesterday(yahoofinance.Stock stock) throws IOException
 	{
 //		HistoricalQuote quote = getPreviousQuote(stock, 1);
-		HistoricalQuote recent = getPreviousQuote(stock, 1);
-		double yesterdaysPrice = recent.getClose().doubleValue();
-		double todaysPrice = stock.getQuote(true).getPrice().doubleValue();
-		double netGain = todaysPrice - yesterdaysPrice;
-		return netGain;
+//		HistoricalQuote recent = getPreviousQuote(stock, 1);
+//		double yesterdaysPrice = recent.getClose().doubleValue();
+//		double todaysPrice = stock.getQuote(true).getPrice().doubleValue();
+//		double netGain = todaysPrice - yesterdaysPrice;
+//		return netGain;
+		return stock.getQuote(true).getPrice().doubleValue() - stock.getQuote().getPreviousClose().doubleValue();
 	}
 	private HistoricalQuote getPreviousQuote(yahoofinance.Stock stock, int prevDays) throws IOException
 	{
-		java.util.Calendar from = java.util.Calendar.getInstance();
-		java.util.Calendar to = java.util.Calendar.getInstance();
-		from.add(java.util.Calendar.DAY_OF_YEAR, -5); //this gets the last 20 days but we only need the last recorded day
-														//I ran into the issue of the stock market not running on weekends:).
-														//they might close on holidays too, so the 20 days *should* cover it.
 		
-		List<HistoricalQuote> hist =  stock.getHistory(from, to, Interval.DAILY);
-		System.out.println(hist.get(0).getDate());
-		HistoricalQuote recent = hist.get(1);//prevDays - 1);
-		return recent;
+		
+		Calendar from = Calendar.getInstance();
+		Calendar to = Calendar.getInstance();
+		from.add(Calendar.YEAR, -1); // from 1 year ago
+		 
+		yahoofinance.Stock google = YahooFinance.get("YHOO");
+		List<HistoricalQuote> temp = google.getHistory(from);
+		List<HistoricalQuote> googleHistQuotes = google.getHistory(from, to, Interval.WEEKLY);
+//		return google.getQuote(true);
+		
+		return googleHistQuotes.get(1);
+		
+		
+//		from = java.util.Calendar.getInstance();
+//		to = java.util.Calendar.getInstance();
+//		from.add(java.util.Calendar.DAY_OF_YEAR, -20); //this gets the last 20 days but we only need the last recorded day
+//														//I ran into the issue of the stock market not running on weekends:).
+//														//they might close on holidays too, so the 20 days *should* cover it.
+//		
+//		List<HistoricalQuote> hist = stock.getHistory();
+//		System.out.println(hist.get(1).getDate());
+//		HistoricalQuote recent = hist.get(1);//prevDays - 1);
+//		return recent;
 	}
 	private yahoofinance.Stock getCurrentStockInfo(String stockName)
 	{
