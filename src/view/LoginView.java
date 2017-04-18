@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -204,23 +206,38 @@ public class LoginView   implements IView {
 				}
 			});
 	        
-	    
+	    //REMEMBER ME
+	        rdbtnRemeberMe.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+					//when multiple checked
+					if(rdbtnRemeberMe.isSelected()){
+						//set the current password to the text field
+						textPane.setText(textPane.getText());
+						
+					}else if(!rdbtnRemeberMe.isSelected()){
+			             //dont set
+					}
+				}
+			});
 	                                                 // Connect database and save data Handler                                              
 	        btnCreate.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
+					utility.CommonUtil temp = new utility.CommonUtil();	
 					view.ActionEvent event = new view.ActionEvent();
 					event.username = textField.getText();
 					event.password = NewPW.getText();
-					event.action = view.ActionEvent.ActionType.REGISTER;
-					if(registerController.register(event))
-					{
-						 LogInPanel.setVisible(true);
-						 Registeration.setVisible(false);
-					}
-					else
-					{
-						JOptionPane.showMessageDialog(frame, "User already exist in database");
-					}
+						if(NewPW.getSelectedText() == passwordField_2.getSelectedText() && textField.getText() != null){
+							  if(temp.regexChecker("^[a-z0-9]{8,18}$", NewPW.getText())){
+								  if(registerController.register(event)){
+					        	 LogInPanel.setVisible(true);
+						         Registeration.setVisible(false);
+						         event.action = view.ActionEvent.ActionType.REGISTER;
+								    }else JOptionPane.showMessageDialog(frame, " ineligible username");
+							    }else JOptionPane.showMessageDialog(frame, "password must be 8-18 chars digits and letters");
+						 }else JOptionPane.showMessageDialog(frame, "passwords dont match");
+					
+					
+					
 				      
 			          	}
 					
