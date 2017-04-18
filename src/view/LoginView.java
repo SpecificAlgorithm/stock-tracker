@@ -207,18 +207,18 @@ public class LoginView   implements IView {
 			});
 	        
 	    //REMEMBER ME
-	        rdbtnRemeberMe.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent arg0) {
-					//when multiple checked
-					if(rdbtnRemeberMe.isSelected()){
-						//set the current password to the text field
-						textPane.setText(textPane.getText());
-						
-					}else if(!rdbtnRemeberMe.isSelected()){
-			             //dont set
-					}
+	        btnLogIn.addActionListener(new ActionListener() {
+			    public void actionPerformed(ActionEvent arg0) {
+				try{
+					view.ActionEvent event = new view.ActionEvent();
+					event.action = ActionType.LOGIN;
+					event.username = textPane.getText();
+					event.password = passwordField.getText();
+					loginController.login(event, false, rdbtnRemeberMe.isSelected());
+				}catch(Exception e){   JOptionPane.showMessageDialog(null,"Error !!!");     }
 				}
 			});
+	        
 	                                                 // Connect database and save data Handler                                              
 	        btnCreate.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
